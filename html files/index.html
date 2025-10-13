@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- JQuery for Address Selector -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <title>Submit Complaint - eReklamo</title>
+    <link rel="stylesheet" href="index.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <h1 class="logo-text">eReklamo</h1>
+                </div>
+                <div class="header-right">
+                    <span class="user-status" id="userStatus">Guest User</span>
+                    <a href="landing_page.html" class="btn btn-outline">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <line x1="19" y1="12" x2="5" y2="12"></line>
+                            <polyline points="12 19 5 12 12 5"></polyline>
+                        </svg>
+                        Back
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Progress Indicator -->
+    <div class="progress-container">
+        <div class="container">
+            <div class="progress-steps">
+                <div class="progress-step active">
+                    <div class="step-circle">1</div>
+                    <span class="step-label">Complaint Details</span>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step">
+                    <div class="step-circle">2</div>
+                    <span class="step-label">Upload Evidence</span>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step">
+                    <div class="step-circle">3</div>
+                    <span class="step-label">Review & Submit</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Form Section -->
+    <main class="main-content">
+        <div class="container">
+            <div class="form-wrapper">
+                <div class="form-header">
+                    <h2 class="form-title">Submit a Complaint</h2>
+                    <p class="form-description">Fill out the form below to report an issue in your community. All fields marked with * are required.</p>
+                </div>
+
+                <form id="complaintForm" class="complaint-form">
+                    <!-- Category Section -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M4 6h16M4 12h16M4 18h16"></path>
+                            </svg>
+                            Category Information
+                        </h3>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="category">Category *</label>
+                                <select id="category" name="category" required>
+                                    <option value="">Select a category</option>
+                                    <option value="infrastructure">Infrastructure</option>
+                                    <option value="environment">Environment</option>
+                                    <option value="peace_and_order">Peace and Order</option>
+                                    <option value="health_and_sanitation">Health and Sanitation</option>
+                                    <option value="public_safety">Public Safety</option>
+                                    <option value="traffic_and_transportation">Traffic and Transportation</option>
+                                    <option value="others">Others</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="subcategory">Subcategory *</label>
+                                <select id="subcategory" name="subcategory" required disabled>
+                                    <option value="">Select a subcategory</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="otherCategoryGroup" style="display: none;">
+                            <label for="otherCategory">Please specify your complaint *</label>
+                            <input 
+                                type="text" 
+                                id="otherCategory" 
+                                name="otherCategory" 
+                                placeholder="Please describe your concern in brief"
+                            >
+                            <p class="field-hint">This field is required when "Others" category is selected</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">Description *</label>
+                            <textarea 
+                                id="description" 
+                                name="description" 
+                                rows="5" 
+                                placeholder="Describe your complaint in detail. Include as much information as possible to help us understand and resolve the issue."
+                                required
+                            ></textarea>
+                            <div class="char-counter">
+                                <span id="charCount">0</span> characters
+                            </div>
+                        </div>
+
+                        <!-- Dynamic Location Dropdowns - Implement cascading logic with Fetch API -->
+                        <div class="form-group">
+                            <label for="region">Region *</label>
+                            <select id="region" name="region" required></select>
+                            <p class="field-hint">Select the region</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="province">Province *</label>
+                            <select id="province" name="province" required ></select>
+                            <p class="field-hint">Select the province</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="city">City/Municipality *</label>
+                            <select id="city" name="city" required ></select>
+                            <p class="field-hint">Select the city or municipality</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="barangay">Barangay *</label>
+                            <select id="barangay" name="barangay" required ></select>
+                            <p class="field-hint">Select the barangay</p>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="street">Street/Road *</label>
+                                <input 
+                                    type="text" 
+                                    id="street" 
+                                    name="street" 
+                                    placeholder="e.g., Main Street"
+                                    required
+                                >
+                            </div>
+                            <div class="form-group">
+                                <label for="landmark">Landmark</label>
+                                <input 
+                                    type="text" 
+                                    id="landmark" 
+                                    name="landmark" 
+                                    placeholder="e.g., Near Brgy. Hall"
+                                >
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="zipCode">ZIP Code</label>
+                            <input 
+                                type="text" 
+                                id="zipCode" 
+                                name="zipCode" 
+                                placeholder="e.g., 1000"
+                                maxlength="4"
+                            >
+                            <p class="field-hint">Postal code (optional)</p>
+                        </div>
+                    </div>
+
+                    <!-- Script for Address Selector -->
+                    <script src="ph-address-selector.js"></script>
+
+                    <!-- Upload Section -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                            Evidence & Attachments
+                        </h3>
+
+                        <div class="form-group">
+                            <div class="upload-header">
+                                <label>
+                                    Photos 
+                                    <span id="photoCount" class="upload-count">0/5</span>
+                                </label>
+                                <button type="button" id="clearAllPhotos" class="clear-all-btn" onclick="clearAllPhotos()" style="display: none;" title="Remove all photos">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" class="clear-icon">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    </svg>
+                                    Clear All
+                                </button>
+                            </div>
+                            <div class="upload-area" id="photoUpload">
+                                <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                    <polyline points="21 15 16 10 5 21"></polyline>
+                                </svg>
+                                <p class="upload-text">Click to upload photos or drag and drop</p>
+                                <p class="upload-hint">PNG, JPG up to 10MB each</p>
+                                <input type="file" id="photoInput" accept="image/*" multiple hidden>
+                            </div>
+                            <div id="photoPreview" class="preview-grid"></div>
+                            <p class="upload-info" id="photoInfo" style="display: none;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" class="info-icon">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                </svg>
+                                Click the × button on each photo to remove it
+                            </p>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="upload-header">
+                                <label>Video (Maximum 1)</label>
+                                <button type="button" id="clearAllAttachments" class="clear-all-btn clear-all-attachments" onclick="clearAllAttachments()" style="display: none;" title="Remove all attachments">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" class="clear-icon">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    </svg>
+                                    Clear All Attachments
+                                </button>
+                            </div>
+                            <div class="upload-area" id="videoUpload">
+                                <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                                    <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                                </svg>
+                                <p class="upload-text">Click to upload video or drag and drop</p>
+                                <p class="upload-hint">MP4, MOV up to 50MB</p>
+                                <input type="file" id="videoInput" accept="video/*" hidden>
+                            </div>
+                            <div id="videoPreview"></div>
+                        </div>
+                    </div>
+
+                    <!-- Notification Preferences -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                            </svg>
+                            Notification Preferences
+                        </h3>
+
+                        <div class="notification-card" id="notificationSection">
+                            <div class="checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="emailUpdates" name="emailUpdates" disabled>
+                                    <span class="checkbox-custom"></span>
+                                    <span class="checkbox-text">
+                                        <strong>Email Notifications</strong>
+                                        <small>Receive updates via email about your complaint status</small>
+                                    </span>
+                                </label>
+
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="smsUpdates" name="smsUpdates" disabled>
+                                    <span class="checkbox-custom"></span>
+                                    <span class="checkbox-text">
+                                        <strong>SMS Notifications</strong>
+                                        <small>Receive text message updates on your phone</small>
+                                    </span>
+                                </label>
+                            </div>
+
+                            <div class="notification-notice">
+                                <svg class="notice-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                </svg>
+                                <p>
+                                    <a href="sign_in.html" class="link">Sign in</a> to your account to enable email and SMS notifications
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline" onclick="window.location.href='landing_page.html'">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary btn-large" onclick="window.location.href='tracking_page.html'">
+                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <polyline points="9 11 12 14 22 4"></polyline>
+                                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                            </svg>
+                            Submit Complaint
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script src="index.js"></script>
+</body>
+</html>

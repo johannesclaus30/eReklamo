@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ala-Eh - Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="min-h-screen bg-gradient">
+        <!-- Header -->
+        <header class="header">
+            <div class="container header-content">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="logo">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 style="color: var(--primary); font-size: 1.25rem;">Ala-Eh</h2>
+                            <p class="text-sm text-muted">Welcome, Maria Santos</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button class="btn btn-ghost btn-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+                                <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+                            </svg>
+                        </button>
+                        <a href="index.html" class="btn btn-ghost btn-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                <polyline points="16 17 21 12 16 7"></polyline>
+                                <line x1="21" y1="12" x2="9" y2="12"></line>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="container" style="padding-top: 2rem; padding-bottom: 2rem;">
+            <!-- Stats Cards -->
+            <div class="grid gap-4 mb-8" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+                <div class="card">
+                    <div class="stat-card">
+                        <div class="stat-number text-primary">3</div>
+                        <div class="stat-label">Total</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="stat-card">
+                        <div class="stat-number" style="color: #d97706;">1</div>
+                        <div class="stat-label">Pending</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="stat-card">
+                        <div class="stat-number" style="color: #7c3aed;">1</div>
+                        <div class="stat-label">In Progress</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="stat-card">
+                        <div class="stat-number" style="color: #059669;">1</div>
+                        <div class="stat-label">Resolved</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Complaints List -->
+            <div class="mb-8">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2>My Complaints</h2>
+                        <p class="text-muted">Track and manage your submitted complaints</p>
+                    </div>
+                </div>
+
+                <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    <!-- Complaint Card 1 -->
+                    <a href="complaint-detail.html" class="card" style="text-decoration: none; color: inherit; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.boxShadow='0 10px 25px rgba(0,0,0,0.15)'; this.style.transform='translateY(-2px)';" onmouseout="this.style.boxShadow='0 10px 15px -3px rgba(0, 0, 0, 0.1)'; this.style.transform='translateY(0)';">
+                        <div class="card-header">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <div class="card-title" style="font-size: 1rem;">CMP-001</div>
+                                    <div class="card-description">Infrastructure</div>
+                                </div>
+                                <span class="badge badge-in-progress">In Progress</span>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <p class="text-sm mb-3" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                Large pothole on Main Street causing traffic issues and potential vehicle damage.
+                            </p>
+                            <div class="flex items-center justify-between text-xs text-muted">
+                                <div class="flex items-center gap-1">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polyline points="12 6 12 12 16 14"></polyline>
+                                    </svg>
+                                    <span>Sep 25, 2025</span>
+                                </div>
+                                <span class="text-primary">View Details →</span>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Complaint Card 2 -->
+                    <a href="complaint-detail.html" class="card" style="text-decoration: none; color: inherit; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.boxShadow='0 10px 25px rgba(0,0,0,0.15)'; this.style.transform='translateY(-2px)';" onmouseout="this.style.boxShadow='0 10px 15px -3px rgba(0, 0, 0, 0.1)'; this.style.transform='translateY(0)';">
+                        <div class="card-header">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <div class="card-title" style="font-size: 1rem;">CMP-002</div>
+                                    <div class="card-description">Environment</div>
+                                </div>
+                                <span class="badge badge-resolved">Resolved</span>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <p class="text-sm mb-3" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                Illegal dumping of trash in the vacant lot. Multiple bags of household waste.
+                            </p>
+                            <div class="flex items-center justify-between text-xs text-muted">
+                                <div class="flex items-center gap-1">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                    </svg>
+                                    <span>Sep 20, 2025</span>
+                                </div>
+                                <span class="text-primary">View Details →</span>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Complaint Card 3 -->
+                    <a href="complaint-detail.html" class="card" style="text-decoration: none; color: inherit; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.boxShadow='0 10px 25px rgba(0,0,0,0.15)'; this.style.transform='translateY(-2px)';" onmouseout="this.style.boxShadow='0 10px 15px -3px rgba(0, 0, 0, 0.1)'; this.style.transform='translateY(0)';">
+                        <div class="card-header">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <div class="card-title" style="font-size: 1rem;">CMP-005</div>
+                                    <div class="card-description">Utilities</div>
+                                </div>
+                                <span class="badge badge-submitted">Submitted</span>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <p class="text-sm mb-3" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                Water leak from main pipe flooding the street. Water pressure is very low.
+                            </p>
+                            <div class="flex items-center justify-between text-xs text-muted">
+                                <div class="flex items-center gap-1">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                        <polyline points="14 2 14 8 20 8"></polyline>
+                                    </svg>
+                                    <span>Oct 1, 2025</span>
+                                </div>
+                                <span class="text-primary">View Details →</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </main>
+
+        <!-- Floating Action Button -->
+        <a href="complaint-submission.html" class="fab">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+        </a>
+    </div>
+</body>
+</html>

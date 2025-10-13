@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ala-Eh - Admin Login</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="min-h-screen bg-gradient flex items-center justify-center" style="padding: 1rem;">
+        <div style="width: 100%; max-width: 28rem;">
+            <!-- Logo and Title -->
+            <div class="text-center mb-8">
+                <div class="logo" style="width: 5rem; height: 5rem; display: inline-flex; margin-bottom: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.1); background: linear-gradient(to bottom right, var(--primary), rgba(45, 139, 62, 0.8));">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"></path>
+                    </svg>
+                </div>
+                <h1 style="color: var(--primary);">Ala-Eh Admin</h1>
+                <p class="text-muted">Government Employee Portal</p>
+            </div>
+
+            <!-- Login Card -->
+            <div class="card" style="border-color: rgba(45, 139, 62, 0.2);">
+                <div class="card-header">
+                    <div class="card-title">Admin Login</div>
+                    <div class="card-description">Secure access for authorized personnel only</div>
+                </div>
+                <form action="admin-dashboard.html" method="post">
+                    <div class="card-content space-y-4">
+                        <div class="space-y-2">
+                            <label class="label" for="admin-email">Official Email</label>
+                            <div class="input-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                                </svg>
+                                <input class="input" id="admin-email" type="email" name="email" placeholder="admin@government.gov" required>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="label" for="admin-password">Password</label>
+                            <div class="input-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                </svg>
+                                <input class="input" id="admin-password" type="password" name="password" placeholder="••••••••" required>
+                            </div>
+                        </div>
+                        <div class="bg-accent p-3 rounded" style="border: 1px solid rgba(249, 216, 73, 0.3);">
+                            <p class="text-sm">
+                                🔒 This portal is for authorized government employees only. Unauthorized access is prohibited.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="card-footer space-y-3">
+                        <button type="submit" class="btn btn-primary btn-full">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"></path>
+                            </svg>
+                            Sign In as Admin
+                        </button>
+                        <a href="resident-login.html" class="btn btn-ghost btn-full">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
+                                <path d="m12 19-7-7 7-7"></path>
+                                <path d="M19 12H5"></path>
+                            </svg>
+                            Back to Resident Login
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <div class="text-center mt-4" style="font-size: 0.75rem; color: var(--muted-foreground);">
+                <p>For technical support, contact IT Department</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

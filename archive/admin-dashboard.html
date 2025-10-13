@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ala-Eh - Admin Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="min-h-screen bg-gradient">
+        <!-- Header -->
+        <header class="header">
+            <div class="container header-content">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="logo" style="background: linear-gradient(to bottom right, var(--primary), rgba(45, 139, 62, 0.8));">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="14" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 style="color: var(--primary); font-size: 1.25rem;">Admin Dashboard</h2>
+                            <p class="text-sm text-muted">Ala-Eh Management Portal</p>
+                        </div>
+                    </div>
+                    <a href="admin-login.html" class="btn btn-ghost btn-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <div class="bg-white" style="border-bottom: 1px solid var(--border);">
+            <div class="container">
+                <nav class="nav-tabs">
+                    <button class="nav-tab active">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg>
+                        Dashboard
+                    </button>
+                    <a href="admin-complaints-list.html" class="nav-tab">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                        All Complaints
+                    </a>
+                    <a href="admin-analytics.html" class="nav-tab">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="20" x2="12" y2="10"></line>
+                            <line x1="18" y1="20" x2="18" y2="4"></line>
+                            <line x1="6" y1="20" x2="6" y2="16"></line>
+                        </svg>
+                        Analytics
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="container" style="padding-top: 2rem; padding-bottom: 2rem;">
+            <!-- Stats Cards -->
+            <div class="grid gap-4 mb-8" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+                <div class="card">
+                    <div class="stat-card">
+                        <div class="stat-number text-primary">8</div>
+                        <div class="stat-label">Total</div>
+                    </div>
+                </div>
+                <div class="card" style="border-color: #fde68a; background: rgba(254, 243, 199, 0.5);">
+                    <div class="stat-card">
+                        <div class="flex items-center justify-center gap-1 mb-2">
+                            <div class="stat-number" style="color: #d97706;">2</div>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                        </div>
+                        <div class="stat-label">Pending</div>
+                    </div>
+                </div>
+                <div class="card" style="border-color: #e9d5ff; background: rgba(243, 232, 255, 0.5);">
+                    <div class="stat-card">
+                        <div class="flex items-center justify-center gap-1 mb-2">
+                            <div class="stat-number" style="color: #7c3aed;">3</div>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2">
+                                <line x1="5" y1="9" x2="19" y2="9"></line>
+                                <line x1="5" y1="15" x2="19" y2="15"></line>
+                                <line x1="9" y1="3" x2="9" y2="21"></line>
+                                <line x1="15" y1="3" x2="15" y2="21"></line>
+                            </svg>
+                        </div>
+                        <div class="stat-label">In Progress</div>
+                    </div>
+                </div>
+                <div class="card" style="border-color: #a7f3d0; background: rgba(209, 250, 229, 0.5);">
+                    <div class="stat-card">
+                        <div class="stat-number" style="color: #059669;">2</div>
+                        <div class="stat-label">Resolved</div>
+                    </div>
+                </div>
+                <div class="card" style="border-color: #fecaca; background: rgba(254, 226, 226, 0.5);">
+                    <div class="stat-card">
+                        <div class="flex items-center justify-center gap-1 mb-2">
+                            <div class="stat-number" style="color: #dc2626;">1</div>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="15" y1="9" x2="9" y2="15"></line>
+                                <line x1="9" y1="9" x2="15" y2="15"></line>
+                            </svg>
+                        </div>
+                        <div class="stat-label">Declined</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Placeholder -->
+            <div class="grid gap-6 mb-8" style="grid-template-columns: 1fr 1fr;">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Complaints by Category</div>
+                        <div class="card-description">Distribution across different issue types</div>
+                    </div>
+                    <div class="card-content">
+                        <div style="height: 300px; display: flex; align-items: center; justify-content: center; background: var(--muted); border-radius: 0.5rem;">
+                            <p class="text-muted">Pie Chart: Category Distribution</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Status Overview</div>
+                        <div class="card-description">Current complaint processing status</div>
+                    </div>
+                    <div class="card-content">
+                        <div style="height: 300px; display: flex; align-items: center; justify-content: center; background: var(--muted); border-radius: 0.5rem;">
+                            <p class="text-muted">Bar Chart: Status Distribution</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Complaints -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="card-title">Recent Complaints</div>
+                            <div class="card-description">Latest submissions requiring attention</div>
+                        </div>
+                        <a href="admin-complaints-list.html" class="btn btn-outline">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                            View All
+                        </a>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-4 rounded border" style="background: rgba(45, 139, 62, 0.03); cursor: pointer;" onmouseover="this.style.background='rgba(45, 139, 62, 0.05)'" onmouseout="this.style.background='rgba(45, 139, 62, 0.03)'">
+                            <div style="flex: 1;">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="text-primary">CMP-001</span>
+                                    <span class="text-sm text-muted">•</span>
+                                    <span class="text-sm text-muted">Infrastructure</span>
+                                </div>
+                                <p class="text-sm" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Large pothole on Main Street causing traffic issues</p>
+                            </div>
+                            <div style="margin-left: 1rem;">
+                                <span class="badge badge-in-progress">in-progress</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between p-4 rounded border" style="background: rgba(45, 139, 62, 0.03); cursor: pointer;" onmouseover="this.style.background='rgba(45, 139, 62, 0.05)'" onmouseout="this.style.background='rgba(45, 139, 62, 0.03)'">
+                            <div style="flex: 1;">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="text-primary">CMP-005</span>
+                                    <span class="text-sm text-muted">•</span>
+                                    <span class="text-sm text-muted">Utilities</span>
+                                </div>
+                                <p class="text-sm" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Water leak from main pipe flooding the street</p>
+                            </div>
+                            <div style="margin-left: 1rem;">
+                                <span class="badge badge-in-progress">in-progress</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between p-4 rounded border" style="background: rgba(45, 139, 62, 0.03); cursor: pointer;" onmouseover="this.style.background='rgba(45, 139, 62, 0.05)'" onmouseout="this.style.background='rgba(45, 139, 62, 0.03)'">
+                            <div style="flex: 1;">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="text-primary">CMP-003</span>
+                                    <span class="text-sm text-muted">•</span>
+                                    <span class="text-sm text-muted">Public Services</span>
+                                </div>
+                                <p class="text-sm" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Streetlight has been out for over a month</p>
+                            </div>
+                            <div style="margin-left: 1rem;">
+                                <span class="badge badge-submitted">submitted</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

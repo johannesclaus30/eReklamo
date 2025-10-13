@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eReklamo - Community Complaint Management System</title>
+    <link rel="stylesheet" href="landing_page.css">
+    <link rel="icon" type="image/png" href="logos/eReklamo_Icon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <!-- <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <h1 class="logo-text">eReklamo</h1> -->
+                    <img class="ereklamo-logo" src="logos/eReklamo_White.png" />
+                </div>
+                <nav class="nav">
+                    <a href="sign_in.html" class="btn btn-outline">Sign In</a>
+                    <a href="sign_up.html" class="btn btn-primary">Sign Up</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-overlay"></div>
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <div class="hero-badge">
+                        
+                        Community-Powered Solution
+                    </div>
+                    <h2 class="hero-title">Your Voice Matters in Building Better Communities</h2>
+                    <p class="hero-description">
+                        eReklamo is a comprehensive complaint management system designed to help you 
+                        report issues in your community efficiently and track their resolution status in real-time.
+                    </p>
+                    <div class="hero-buttons">
+                        <a href="index.html" class="btn btn-large btn-primary">
+                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                            Submit a Complaint
+                        </a>
+                        <button onclick="openTrackingModal()" class="btn btn-large btn-outline-white">
+                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                            Track Complaint
+                        </button>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <div class="stat-number">1,234+</div>
+                            <div class="stat-label">Complaints Resolved</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">500+</div>
+                            <div class="stat-label">Active Users</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">24hrs</div>
+                            <div class="stat-label">Average Response</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img src="imgs/home_photo.jpg" alt="Community">
+                    <div class="floating-card card-1">
+                        <div class="card-icon">✓</div>
+                        <div class="card-text">
+                            <strong>250+ Resolved</strong>
+                            <span>This Month</span>
+                        </div>
+                    </div>
+                    <div class="floating-card card-2">
+                        <div class="card-icon">📍</div>
+                        <div class="card-text">
+                            <strong>Live Tracking</strong>
+                            <span>Real-time Updates</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-subtitle">Why Choose eReklamo</span>
+                <h2 class="section-title">Powerful Features for Effective Complaint Management</h2>
+                <p class="section-description">Everything you need to report and track community issues efficiently</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon orange">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Easy Submission</h3>
+                    <p class="feature-description">Submit complaints with detailed information, photos, and videos in just a few clicks</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon orange">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Location Tracking</h3>
+                    <p class="feature-description">Specify exact locations to help resolve issues faster and more accurately</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon orange">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Real-time Updates</h3>
+                    <p class="feature-description">Receive instant notifications via email or SMS about your complaint status</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon orange">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Track Progress</h3>
+                    <p class="feature-description">Monitor the progress of your complaints with a unique tracking number</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon orange">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Secure & Private</h3>
+                    <p class="feature-description">Your information is protected with industry-standard security measures</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon orange">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Community Driven</h3>
+                    <p class="feature-description">Join thousands of citizens making their communities better</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-subtitle">Simple Process</span>
+                <h2 class="section-title">How It Works</h2>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Create an Account or Continue as Guest</h3>
+                        <p class="step-description">Sign up for an account to receive updates, or continue as a guest for quick submissions</p>
+                    </div>
+                    <div class="step-image">
+                        <img src="https://images.unsplash.com/photo-1598015132635-131afe3ba07f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="Sign Up">
+                    </div>
+                </div>
+
+                <div class="step step-reverse">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Submit Your Complaint</h3>
+                        <p class="step-description">Fill out the form with details, upload photos/videos, and specify the location of the issue</p>
+                    </div>
+                    <div class="step-image">
+                        <img src="https://images.unsplash.com/photo-1718851957535-7c0924cc6007?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="Submit">
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Get Your Tracking Number</h3>
+                        <p class="step-description">Receive a unique tracking number to monitor your complaint's progress at any time</p>
+                    </div>
+                    <div class="step-image">
+                        <img src="https://images.unsplash.com/photo-1758272420760-5f45e9e5af1c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="Track">
+                    </div>
+                </div>
+
+                <div class="step step-reverse">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Track and Receive Updates</h3>
+                        <p class="step-description">Monitor the status of your complaint and receive notifications when updates are available</p>
+                    </div>
+                    <div class="step-image">
+                        <div class="status-demo">
+                            <div class="status-item completed">✓ Complaint Received</div>
+                            <div class="status-item completed">✓ Under Review</div>
+                            <div class="status-item active">⏱ In Progress</div>
+                            <div class="status-item">○ Resolved</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2 class="cta-title">Ready to Make a Difference?</h2>
+                <p class="cta-description">Join our community and help make your town a better place to live</p>
+                <a href="index.html" class="btn btn-large btn-white">
+                    Get Started Now
+                    <svg class="btn-icon-right" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <h3 class="logo-text">eReklamo</h3>
+                    </div>
+                    <p class="footer-tagline">Making communities better, one complaint at a time.</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Quick Links</h4>
+                        <ul>
+                            <li><a href="index.html">Submit Complaint</a></li>
+                            <li><a href="sign_in.html">Sign In</a></li>
+                            <li><a href="sign_up.html">Sign Up</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Support</h4>
+                        <ul>
+                            <li><a href="#">Help Center</a></li>
+                            <li><a href="#">Contact Us</a></li>
+                            <li><a href="#">FAQ</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Legal</h4>
+                        <ul>
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Terms of Service</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 eReklamo. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Track Complaint Modal -->
+    <div id="trackingModal" class="tracking-modal">
+        <div class="tracking-modal-content">
+            <div class="tracking-modal-header">
+                <h3>Track Your Complaint</h3>
+                <button onclick="closeTrackingModal()" class="modal-close-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="tracking-modal-body">
+                <p class="tracking-modal-description">
+                    Enter your tracking number to view the status and progress of your complaint.
+                </p>
+                <div class="form-group">
+                    <label for="trackingInput">Tracking Number</label>
+                    <input 
+                        class="track-complain"
+                        type="text" 
+                        id="trackingInput" 
+                        placeholder="e.g., REKLAMO-2024-001234"
+                        onkeypress="if(event.key === 'Enter') trackComplaint()"
+                    />
+                </div>
+                <button onclick="trackComplaint()" class="btn btn-large btn-primary btn-full">
+                    Track Status
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openTrackingModal() {
+            document.getElementById('trackingModal').classList.add('show');
+            document.getElementById('trackingInput').focus();
+        }
+
+        function closeTrackingModal() {
+            document.getElementById('trackingModal').classList.remove('show');
+            document.getElementById('trackingInput').value = '';
+        }
+
+        function trackComplaint() {
+            const trackingNumber = document.getElementById('trackingInput').value.trim();
+            if (trackingNumber) {
+                // Store tracking number in sessionStorage
+                sessionStorage.setItem('trackingNumber', trackingNumber);
+                // Redirect to tracking page
+                window.location.href = 'tracking_page.html';
+            }
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('trackingModal');
+            if (event.target === modal) {
+                closeTrackingModal();
+            }
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeTrackingModal();
+            }
+        });
+    </script>
+</body>
+</html>

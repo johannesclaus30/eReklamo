@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ala-Eh - Complaints List</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="min-h-screen bg-gradient">
+        <!-- Header -->
+        <header class="header">
+            <div class="container header-content">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="logo" style="background: linear-gradient(to bottom right, var(--primary), rgba(45, 139, 62, 0.8));">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 style="color: var(--primary); font-size: 1.25rem;">Complaints Management</h2>
+                            <p class="text-sm text-muted">Review and manage all complaints</p>
+                        </div>
+                    </div>
+                    <a href="admin-login.html" class="btn btn-ghost btn-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <div class="bg-white" style="border-bottom: 1px solid var(--border);">
+            <div class="container">
+                <nav class="nav-tabs">
+                    <a href="admin-dashboard.html" class="nav-tab">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg>
+                        Dashboard
+                    </a>
+                    <button class="nav-tab active">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                        All Complaints
+                    </button>
+                    <a href="admin-analytics.html" class="nav-tab">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="20" x2="12" y2="10"></line>
+                            <line x1="18" y1="20" x2="18" y2="4"></line>
+                            <line x1="6" y1="20" x2="6" y2="16"></line>
+                        </svg>
+                        Analytics
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="container" style="padding-top: 2rem; padding-bottom: 2rem;">
+            <!-- Filters -->
+            <div class="card mb-6">
+                <div class="card-header">
+                    <div class="card-title flex items-center gap-2">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                        </svg>
+                        Filters & Search
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                        <div class="input-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                            <input class="input" placeholder="Search by ID, description, name...">
+                        </div>
+                        <select class="select">
+                            <option value="all">All Categories</option>
+                            <option value="infrastructure">Infrastructure</option>
+                            <option value="environment">Environment</option>
+                            <option value="public-services">Public Services</option>
+                            <option value="traffic">Traffic & Transportation</option>
+                            <option value="utilities">Utilities</option>
+                            <option value="health">Health</option>
+                            <option value="safety">Safety</option>
+                        </select>
+                        <select class="select">
+                            <option value="all">All Statuses</option>
+                            <option value="submitted">Submitted</option>
+                            <option value="monitored">Monitored</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="resolved">Resolved</option>
+                            <option value="declined">Declined</option>
+                        </select>
+                        <select class="select">
+                            <option value="all">All Time</option>
+                            <option value="today">Today</option>
+                            <option value="week">Past Week</option>
+                            <option value="month">Past Month</option>
+                        </select>
+                    </div>
+                    <div class="mt-4 flex items-center justify-between">
+                        <p class="text-sm text-muted">Showing 8 of 8 complaints</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Complaints Table -->
+            <div class="card">
+                <div class="card-content" style="padding: 0;">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Category</th>
+                                    <th>Description</th>
+                                    <th>Submitted By</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-primary">CMP-001</td>
+                                    <td><span class="text-sm">Infrastructure</span></td>
+                                    <td style="max-width: 300px;">
+                                        <p class="text-sm" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">Large pothole on Main Street causing traffic issues</p>
+                                    </td>
+                                    <td>
+                                        <div class="flex items-center gap-2">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                                                <circle cx="12" cy="7" r="4"></circle>
+                                            </svg>
+                                            <span class="text-sm">Maria Santos</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="text-sm text-muted">Sep 25, 2025</span></td>
+                                    <td>
+                                        <select class="select" style="width: 140px; padding: 0.25rem 0.5rem; font-size: 0.875rem;">
+                                            <option value="submitted">Submitted</option>
+                                            <option value="monitored">Monitored</option>
+                                            <option value="in-progress" selected>In Progress</option>
+                                            <option value="resolved">Resolved</option>
+                                            <option value="declined">Declined</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-ghost" style="padding: 0.25rem 0.5rem; font-size: 0.875rem;">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.25rem;">
+                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                <circle cx="12" cy="12" r="3"></circle>
+                                            </svg>
+                                            View
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-primary">CMP-002</td>
+                                    <td><span class="text-sm">Environment</span></td>
+                                    <td style="max-width: 300px;">
+                                        <p class="text-sm" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">Illegal dumping of trash in the vacant lot</p>
+                                    </td>
+                                    <td>
+                                        <div class="flex items-center gap-2">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                                                <circle cx="12" cy="7" r="4"></circle>
+                                            </svg>
+                                            <span class="text-sm">Juan Dela Cruz</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="text-sm text-muted">Sep 20, 2025</span></td>
+                                    <td>
+                                        <select class="select" style="width: 140px; padding: 0.25rem 0.5rem; font-size: 0.875rem;">
+                                            <option value="submitted">Submitted</option>
+                                            <option value="monitored">Monitored</option>
+                                            <option value="in-progress">In Progress</option>
+                                            <option value="resolved" selected>Resolved</option>
+                                            <option value="declined">Declined</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-ghost" style="padding: 0.25rem 0.5rem; font-size: 0.875rem;">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.25rem;">
+                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                <circle cx="12" cy="12" r="3"></circle>
+                                            </svg>
+                                            View
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-primary">CMP-003</td>
+                                    <td><span class="text-sm">Public Services</span></td>
+                                    <td style="max-width: 300px;">
+                                        <p class="text-sm" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">Streetlight has been out for over a month</p>
+                                    </td>
+                                    <td>
+                                        <div class="flex items-center gap-2">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                                                <circle cx="12" cy="7" r="4"></circle>
+                                            </svg>
+                                            <div>
+                                                <span class="text-sm">Anonymous Guest</span>
+                                                <span class="badge" style="font-size: 0.625rem; margin-left: 0.5rem;">Guest</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="text-sm text-muted">Sep 30, 2025</span></td>
+                                    <td>
+                                        <select class="select" style="width: 140px; padding: 0.25rem 0.5rem; font-size: 0.875rem;">
+                                            <option value="submitted" selected>Submitted</option>
+                                            <option value="monitored">Monitored</option>
+                                            <option value="in-progress">In Progress</option>
+                                            <option value="resolved">Resolved</option>
+                                            <option value="declined">Declined</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-ghost" style="padding: 0.25rem 0.5rem; font-size: 0.875rem;">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.25rem;">
+                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                <circle cx="12" cy="12" r="3"></circle>
+                                            </svg>
+                                            View
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
