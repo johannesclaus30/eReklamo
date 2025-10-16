@@ -357,11 +357,11 @@ document.getElementById('complaintForm').addEventListener('submit', function(e) 
     const category = document.getElementById('category').value;
     const subcategory = document.getElementById('subcategory').value;
     const description = document.getElementById('description').value;
-    const location = document.getElementById('location').value;
+    // const location = document.getElementById('location').value;
     const otherCategory = document.getElementById('otherCategory').value;
     
     // Validate required fields
-    if (!category || !description || !location) {
+    if (!category || !description) {
         alert('Please fill in all required fields');
         return;
     }

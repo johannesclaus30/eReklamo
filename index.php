@@ -1,4 +1,6 @@
-<?
+<?php
+
+$User_FirstName = $User_LastName = $User_Email = $User_PhoneNumber = $User_Password = $User_Type = "";
 
 ?>
 
@@ -8,7 +10,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>eReklamo - Community Complaint Management System</title>
-    <link rel="stylesheet" href="landing_page.css">
+    <link rel="stylesheet" href="index_design.css">
     <link rel="icon" type="image/png" href="logos/eReklamo_Icon.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -18,12 +20,6 @@
         <div class="container">
             <div class="header-content">
                 <div class="logo"> 
-                    <!-- <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="12" y1="8" x2="12" y2="12"></line>
-                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                    </svg>
-                    <h1 class="logo-text">eReklamo</h1> -->
                     <img class="ereklamo-logo" src="logos/eReklamo_White.png" />
                 </div>
                 <nav class="nav">
@@ -250,7 +246,7 @@
             <div class="cta-content">
                 <h2 class="cta-title">Ready to Make a Difference?</h2>
                 <p class="cta-description">Join our community and help make your town a better place to live</p>
-                <a href="index.html" class="btn btn-large btn-white">
+                <a href="add_complaint" class="btn btn-large btn-white">
                     Get Started Now
                     <svg class="btn-icon-right" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -267,12 +263,7 @@
             <div class="footer-content">
                 <div class="footer-brand">
                     <div class="logo">
-                        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="12" y1="8" x2="12" y2="12"></line>
-                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                        </svg>
-                        <h3 class="logo-text">eReklamo</h3>
+                        <img class="ereklamo-logo" src="logos/eReklamo_Orange.png" />
                     </div>
                     <p class="footer-tagline">Making communities better, one complaint at a time.</p>
                 </div>
@@ -358,7 +349,7 @@
                 // Store tracking number in sessionStorage
                 sessionStorage.setItem('trackingNumber', trackingNumber);
                 // Redirect to tracking page
-                window.location.href = 'tracking_page.html';
+                window.location.href = 'tracking_page';
             }
         }
 

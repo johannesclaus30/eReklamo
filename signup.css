@@ -76,6 +76,28 @@ body {
     margin: 0;
 }
 
+.create-account {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 2px solid transparent;
+    font-size: 14px;
+    background: none;
+    justify-content: center;
+
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+
+    width: 100%;
+}
+
 /* Buttons */
 .btn {
     display: inline-flex;

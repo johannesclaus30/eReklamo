@@ -10,7 +10,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Complaint Submitted - eReklamo</title>
-    <link rel="stylesheet" href="tracking_page.css">
+    <link rel="stylesheet" href="tracking_page_design.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -19,12 +19,7 @@
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="12" y1="8" x2="12" y2="12"></line>
-                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                    </svg>
-                    <h1 class="logo-text">eReklamo</h1>
+                    <img class="ereklamo-logo" src="logos/eReklamo_White.png" />
                 </div>
             </div>
         </div>

@@ -61,7 +61,7 @@ document.getElementById('signUpForm').addEventListener('submit', function(e) {
     const confirmPassword = document.getElementById('confirmPassword').value;
     const terms = document.getElementById('terms').checked;
     
-    // Validation
+    Validation
     if (!firstName || !lastName || !email || !password || !confirmPassword) {
         alert('Please fill in all required fields');
         return;
@@ -121,6 +121,6 @@ document.getElementById('signUpForm').addEventListener('submit', function(e) {
     localStorage.setItem('isSignedIn', 'true');
     localStorage.setItem('userEmail', email);
     localStorage.setItem('userData', JSON.stringify(userData));
-    alert('Account created successfully!');
-    window.location.href = 'user_dashboard.html';
+    // alert('Account created successfully!');
+    window.location.href = 'user_dashboard';
 });

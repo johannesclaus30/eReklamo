@@ -62,24 +62,6 @@ body {
     font-size: 14px;
 }
 
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.logo-icon {
-    width: 32px;
-    height: 32px;
-    stroke-width: 2;
-}
-
-.logo-text {
-    font-size: 24px;
-    font-weight: 700;
-    margin: 0;
-}
-
 /* Buttons */
 .btn {
     display: inline-flex;

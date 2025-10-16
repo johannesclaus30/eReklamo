@@ -1,7 +1,171 @@
 <?php
+session_start();
+include("connections.php");
 
+if (isset($_SESSION["User_ID"])) {
+    $User_ID = $_SESSION["User_ID"];
 
+} else {
+    $User_ID = 1; // Guest
+}
+
+    $target_dir = "post_photos/";
+    // Ensure the upload directory exists
+    if (!is_dir($target_dir)) {
+        @mkdir($target_dir, 0755, true);
+    }
+    
+
+const MAX_FILES = 5; // Max files per upload request
+const MAX_BYTES_PER_FILE = 5 * 1024 * 1024; // 5 MB per file
+
+$Complaint_Location_ID = $Complaint_Category_Name = $Complaint_SubCategory_Name = $Complaint_Description = $Complaint_TrackingNumber = $Complaint_Status = $Complaint_Region_Name = $Complaint_Province_Name = $Complaint_City_Name = $Complaint_Barangay_Name = $Complaint_Street = $Complaint_Landmark = $Complaint_ZIP = "";
+$Complaint_CategoryErr = $Complaint_SubCategoryErr = $Complaint_DescriptionErr = $Complaint_RegionErr = $Complaint_ProvinceErr = $Complaint_CityErr = $Complaint_BarangayErr = $Complaint_StreetErr = "";
+$success_message = $error_message = "";
+$Complaint_ID = $File_Path = $File_Type = "";
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $Complaint_Category_Name = $_POST["Complaint_Category_Name"] ?? '';
+    $Complaint_SubCategory_Name = $_POST["Complaint_SubCategory_Name"] ?? '';
+    $Complaint_Description = $_POST["Complaint_Description"] ?? '';
+    $Complaint_Region_Name = $_POST["Complaint_Region_Name"] ?? '';
+    $Complaint_Province_Name = $_POST["Complaint_Province_Name"] ?? '';
+    $Complaint_City_Name = $_POST["Complaint_City_Name"] ?? '';
+    $Complaint_Barangay_Name = $_POST["Complaint_Barangay_Name"] ?? '';
+    $Complaint_Street = $_POST["Complaint_Street"] ?? '';
+    $Complaint_Landmark = $_POST["Complaint_Landmark"] ?? '';
+    $Complaint_ZIP = $_POST["Complaint_ZIP"] ?? '';
+
+    // Validate required fields
+    if (empty($Complaint_Category_Name)) {
+        $Complaint_CategoryErr = "Category is required!";
+    }
+    if (empty($Complaint_SubCategory_Name)) {
+        $Complaint_SubCategoryErr = "Subcategory is required!";
+    }
+    if (empty($Complaint_Description)) {
+        $Complaint_DescriptionErr = "Description is required!";
+    }
+    if (empty($Complaint_Region_Name)) {
+        $Complaint_RegionErr = "Region is required!";
+    }
+    if (empty($Complaint_Province_Name)) {
+        $Complaint_ProvinceErr = "Province is required!";
+    }
+    if (empty($Complaint_City_Name)) {
+        $Complaint_CityErr = "City/Municipality is required!";
+    }
+    if (empty($Complaint_Barangay_Name)) {
+        $Complaint_BarangayErr = "Barangay is required!";
+    }
+    if (empty($Complaint_Street)) {
+        $Complaint_StreetErr = "Street/Road is required!";
+    }
+
+    // Proceed if no validation errors
+    if ($Complaint_Category_Name && $Complaint_SubCategory_Name && $Complaint_Description) {
+        // Insert into complaint_location
+        $stmt = mysqli_prepare($connections, "INSERT INTO complaint_location (Complaint_Region, Complaint_Province, Complaint_City, Complaint_Barangay, Complaint_Street, Complaint_Landmark, Complaint_ZIP) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        mysqli_stmt_bind_param($stmt, "sssssss", $Complaint_Region_Name, $Complaint_Province_Name, $Complaint_City_Name, $Complaint_Barangay_Name, $Complaint_Street, $Complaint_Landmark, $Complaint_ZIP);
+        mysqli_stmt_execute($stmt);
+        $Complaint_Location_ID = mysqli_insert_id($connections);
+        mysqli_stmt_close($stmt);
+
+        // Handle subcategory for "Others"
+        if ($Complaint_Category_Name == "Others") {
+            $Complaint_SubCategory_Name = $_POST["Complaint_OtherSubcategory"] ?? '';
+        } else {
+            $Complaint_SubCategory_Name = $_POST["Complaint_SubCategory_Name"] ?? '';
+        }
+
+        // Insert complaint
+        $stmt = mysqli_prepare($connections, "INSERT INTO complaint (User_ID, Complaint_Location_ID, Complaint_Category, Complaint_SubCategory, Complaint_Description, Complaint_TrackingNumber, Complaint_Status, Created_At) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        date_default_timezone_set("Asia/Manila");
+        $current_time = date('Y-m-d H:i:s');
+        $Complaint_TrackingNumber = "ERK-" . strtoupper(bin2hex(random_bytes(5)));
+        $Complaint_Status = "pending";
+        mysqli_stmt_bind_param($stmt, "iissssss", $User_ID, $Complaint_Location_ID, $Complaint_Category_Name, $Complaint_SubCategory_Name, $Complaint_Description, $Complaint_TrackingNumber, $Complaint_Status, $current_time);
+        mysqli_stmt_execute($stmt);
+        $Complaint_ID = mysqli_insert_id($connections); // Store Complaint_ID
+        mysqli_stmt_close($stmt);
+
+        $uploadOk = 0;
+
+// === 1️⃣ VIDEO UPLOAD HANDLING ===
+if (isset($_FILES['videoInput']) && $_FILES['videoInput']['error'] === UPLOAD_ERR_OK) {
+    $videoDir = "post_videos/";
+    $videoFile = $_FILES['videoInput'];
+    $videoName = basename($videoFile['name']);
+    $videoTmpName = $videoFile['tmp_name'];
+    $videoSize = $videoFile['size'];
+    $videoExt = strtolower(pathinfo($videoName, PATHINFO_EXTENSION));
+    $allowedVideoExt = ['mp4', 'mov', 'avi', 'wmv'];
+
+    if (in_array($videoExt, $allowedVideoExt)) {
+        if ($videoSize <= 50 * 1024 * 1024) { // 50MB max
+            $newVideoName = uniqid('video_', true) . '.' . $videoExt;
+            $videoPath = $videoDir . $newVideoName;
+
+            if (move_uploaded_file($videoTmpName, $videoPath)) {
+                $insertVideo = $connections->prepare(
+                    "INSERT INTO complaint_media (Complaint_ID, File_Path, File_Type, Upload_Date) VALUES (?, ?, ?, NOW())"
+                );
+                $insertVideo->bind_param("iss", $Complaint_ID, $videoPath, $videoExt);
+                $insertVideo->execute();
+            }
+        } else {
+            echo "<script>alert('Video file exceeds 50MB limit.');</script>";
+        }
+    } else {
+        echo "<script>alert('Invalid video format. Allowed: MP4, MOV, AVI, WMV.');</script>";
+    }
+}
+
+// === 2️⃣ PHOTO UPLOAD HANDLING ===
+if (isset($_FILES['photoInput'])) {
+    $photoDir = "post_photos/";
+    $allowedPhotoExt = ['jpg', 'jpeg', 'png', 'gif'];
+
+    foreach ($_FILES['photoInput']['tmp_name'] as $key => $tmpName) {
+        if ($_FILES['photoInput']['error'][$key] === UPLOAD_ERR_OK) {
+            $photoName = basename($_FILES['photoInput']['name'][$key]);
+            $photoExt = strtolower(pathinfo($photoName, PATHINFO_EXTENSION));
+            $photoSize = $_FILES['photoInput']['size'][$key];
+
+            if (in_array($photoExt, $allowedPhotoExt) && $photoSize <= 10 * 1024 * 1024) {
+                $newPhotoName = uniqid('photo_', true) . '.' . $photoExt;
+                $photoPath = $photoDir . $newPhotoName;
+
+                if (move_uploaded_file($tmpName, $photoPath)) {
+                    $insertPhoto = $connections->prepare(
+                        "INSERT INTO complaint_media (Complaint_ID, File_Path, File_Type, Upload_Date) VALUES (?, ?, ?, NOW())"
+                    );
+                    $insertPhoto->bind_param("iss", $Complaint_ID, $photoPath, $photoExt);
+                    $insertPhoto->execute();
+                }
+            }
+        }
+    }
+}
+    // ✅ If no upload errors occurred, show success message
+    echo "<script>alert('Complaint submitted successfully!');</script>";
+    echo "<script>window.location.href='add_complaint?notify=Complaint submitted successfully!';</script>";
+    }
+}
 ?>
+
+<style>
+    img {
+        height: 150px;
+    }
+</style>
+
+
+<style>
+    .error{
+        color:red;
+    }
+</style>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -12,7 +176,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
     <title>Submit Complaint - eReklamo</title>
-    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="add_complaint_design.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -21,16 +185,11 @@
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="12" y1="8" x2="12" y2="12"></line>
-                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                    </svg>
-                    <h1 class="logo-text">eReklamo</h1>
+                    <img class="ereklamo-logo" src="logos/eReklamo_White.png" />
                 </div>
                 <div class="header-right">
                     <span class="user-status" id="userStatus">Guest User</span>
-                    <a href="landing_page.html" class="btn btn-outline">
+                    <a href="index" class="btn btn-outline">
                         <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <line x1="19" y1="12" x2="5" y2="12"></line>
                             <polyline points="12 19 5 12 12 5"></polyline>
@@ -51,12 +210,12 @@
                     <span class="step-label">Complaint Details</span>
                 </div>
                 <div class="progress-line"></div>
-                <div class="progress-step">
+                <div class="progress-step active">
                     <div class="step-circle">2</div>
                     <span class="step-label">Upload Evidence</span>
                 </div>
                 <div class="progress-line"></div>
-                <div class="progress-step">
+                <div class="progress-step active">
                     <div class="step-circle">3</div>
                     <span class="step-label">Review & Submit</span>
                 </div>
@@ -73,7 +232,7 @@
                     <p class="form-description">Fill out the form below to report an issue in your community. All fields marked with * are required.</p>
                 </div>
 
-                <form id="complaintForm" class="complaint-form">
+                <form id="complaintForm" class="complaint-form" method="POST" action="add_complaint.php" enctype="multipart/form-data">
                     <!-- Category Section -->
                     <div class="form-section">
                         <h3 class="section-title">
@@ -83,10 +242,14 @@
                             Category Information
                         </h3>
 
+                        <!-- Hidden input fields for text values -->
+                            <input type="hidden" name="Complaint_Category_Name" id="Complaint_Category_Name">
+                            <input type="hidden" name="Complaint_SubCategory_Name" id="Complaint_SubCategory_Name">
+
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="category">Category *</label>
-                                <select id="category" name="category" required>
+                                <select id="category" name="Complaint_Category" value="<?php echo $Complaint_Category; ?>" required>
                                     <option value="">Select a category</option>
                                     <option value="infrastructure">Infrastructure</option>
                                     <option value="environment">Environment</option>
@@ -100,7 +263,7 @@
 
                             <div class="form-group">
                                 <label for="subcategory">Subcategory *</label>
-                                <select id="subcategory" name="subcategory" required disabled>
+                                <select id="subcategory" name="Complaint_SubCategory" value="<?php echo $Complaint_SubCategory; ?>" required disabled>
                                     <option value="">Select a subcategory</option>
                                 </select>
                             </div>
@@ -111,7 +274,7 @@
                             <input 
                                 type="text" 
                                 id="otherCategory" 
-                                name="otherCategory" 
+                                name="Complaint_OtherSubcategory"
                                 placeholder="Please describe your concern in brief"
                             >
                             <p class="field-hint">This field is required when "Others" category is selected</p>
@@ -121,9 +284,10 @@
                             <label for="description">Description *</label>
                             <textarea 
                                 id="description" 
-                                name="description" 
+                                name="Complaint_Description" 
                                 rows="5" 
                                 placeholder="Describe your complaint in detail. Include as much information as possible to help us understand and resolve the issue."
+                                value="<?php echo $Complaint_Description; ?>"
                                 required
                             ></textarea>
                             <div class="char-counter">
@@ -132,27 +296,33 @@
                         </div>
 
                         <!-- Dynamic Location Dropdowns - Implement cascading logic with Fetch API -->
+                        <!-- Hidden input fields for text values -->
+                            <input type="hidden" name="Complaint_Region_Name" id="Complaint_Region_Name">
+                            <input type="hidden" name="Complaint_Province_Name" id="Complaint_Province_Name">
+                            <input type="hidden" name="Complaint_City_Name" id="Complaint_City_Name">
+                            <input type="hidden" name="Complaint_Barangay_Name" id="Complaint_Barangay_Name">
+
                         <div class="form-group">
                             <label for="region">Region *</label>
-                            <select id="region" name="region" required></select>
+                            <select id="region" name="Complaint_Region" value="<?php echo $Complaint_Region; ?>" required></select>
                             <p class="field-hint">Select the region</p>
                         </div>
 
                         <div class="form-group">
                             <label for="province">Province *</label>
-                            <select id="province" name="province" required ></select>
+                            <select id="province" name="Complaint_Province" value="<?php echo $Complaint_Province; ?>" required></select>
                             <p class="field-hint">Select the province</p>
                         </div>
 
                         <div class="form-group">
                             <label for="city">City/Municipality *</label>
-                            <select id="city" name="city" required ></select>
+                            <select id="city" name="Complaint_City" value="<?php echo $Complaint_City; ?>" required></select>
                             <p class="field-hint">Select the city or municipality</p>
                         </div>
 
                         <div class="form-group">
                             <label for="barangay">Barangay *</label>
-                            <select id="barangay" name="barangay" required ></select>
+                            <select id="barangay" name="Complaint_Barangay" value="<?php echo $Complaint_Barangay; ?>" required></select>
                             <p class="field-hint">Select the barangay</p>
                         </div>
 
@@ -162,7 +332,7 @@
                                 <input 
                                     type="text" 
                                     id="street" 
-                                    name="street" 
+                                    name="Complaint_Street" 
                                     placeholder="e.g., Main Street"
                                     required
                                 >
@@ -172,7 +342,7 @@
                                 <input 
                                     type="text" 
                                     id="landmark" 
-                                    name="landmark" 
+                                    name="Complaint_Landmark" 
                                     placeholder="e.g., Near Brgy. Hall"
                                 >
                             </div>
@@ -183,7 +353,7 @@
                             <input 
                                 type="text" 
                                 id="zipCode" 
-                                name="zipCode" 
+                                name="Complaint_ZIP" 
                                 placeholder="e.g., 1000"
                                 maxlength="4"
                             >
@@ -211,13 +381,7 @@
                                     Photos 
                                     <span id="photoCount" class="upload-count">0/5</span>
                                 </label>
-                                <button type="button" id="clearAllPhotos" class="clear-all-btn" onclick="clearAllPhotos()" style="display: none;" title="Remove all photos">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" class="clear-icon">
-                                        <polyline points="3 6 5 6 21 6"></polyline>
-                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                    </svg>
-                                    Clear All
-                                </button>
+                                
                             </div>
                             <div class="upload-area" id="photoUpload">
                                 <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -227,7 +391,7 @@
                                 </svg>
                                 <p class="upload-text">Click to upload photos or drag and drop</p>
                                 <p class="upload-hint">PNG, JPG up to 10MB each</p>
-                                <input type="file" id="photoInput" accept="image/*" multiple hidden>
+                                <input type="file" id="photoInput" name="photoInput[]" multiple accept=".jpg,.jpeg,.png,.gif" style="display: none;">
                             </div>
                             <div id="photoPreview" class="preview-grid"></div>
                             <p class="upload-info" id="photoInfo" style="display: none;">
@@ -243,13 +407,7 @@
                         <div class="form-group">
                             <div class="upload-header">
                                 <label>Video (Maximum 1)</label>
-                                <button type="button" id="clearAllAttachments" class="clear-all-btn clear-all-attachments" onclick="clearAllAttachments()" style="display: none;" title="Remove all attachments">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" class="clear-icon">
-                                        <polyline points="3 6 5 6 21 6"></polyline>
-                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                    </svg>
-                                    Clear All Attachments
-                                </button>
+                                
                             </div>
                             <div class="upload-area" id="videoUpload">
                                 <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -258,7 +416,7 @@
                                 </svg>
                                 <p class="upload-text">Click to upload video or drag and drop</p>
                                 <p class="upload-hint">MP4, MOV up to 50MB</p>
-                                <input type="file" id="videoInput" accept="video/*" hidden>
+                                <input type="file" id="videoInput" name="videoInput" accept=".mp4,.mov,.avi,.wmv" style="display:none;">
                             </div>
                             <div id="videoPreview"></div>
                         </div>
@@ -302,7 +460,7 @@
                                     <line x1="12" y1="8" x2="12.01" y2="8"></line>
                                 </svg>
                                 <p>
-                                    <a href="sign_in.html" class="link">Sign in</a> to your account to enable email and SMS notifications
+                                    <a href="sign_in" class="link">Sign in</a> to your account to enable email and SMS notifications
                                 </p>
                             </div>
                         </div>
@@ -310,22 +468,41 @@
 
                     <!-- Submit Button -->
                     <div class="form-actions">
-                        <button type="button" class="btn btn-outline" onclick="window.location.href='landing_page.html'">
+                        <button type="button" class="btn btn-outline" onclick="window.location.href='index'">
                             Cancel
                         </button>
-                        <button type="submit" class="btn btn-primary btn-large" onclick="window.location.href='tracking_page.html'">
+                        <button type="submit" name="btnSubmit" class="btn btn-primary btn-large" id="submitBtn">
                             <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                 <polyline points="9 11 12 14 22 4"></polyline>
                                 <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
                             </svg>
                             Submit Complaint
                         </button>
+                        
                     </div>
                 </form>
             </div>
         </div>
     </main>
 
-    <script src="index.js"></script>
+    <script src="add_complaint.js"></script>
+
+    <script>
+    function setText(nameSel, hiddenId){
+        const opt = document.querySelector(nameSel + " option:checked");
+        document.getElementById(hiddenId).value = opt ? opt.text : "";
+    }
+    ["#category", "#subcategory", "#region", "#province", "#city", "#barangay"].forEach((sel, i) => {
+        const ids = ["Complaint_Category_Name","Complaint_SubCategory_Name","Complaint_Region_Name","Complaint_Province_Name","Complaint_City_Name","Complaint_Barangay_Name"];
+        document.querySelector(sel)?.addEventListener("change", () => setText(sel, ids[i]));
+        // initialize on load too
+        setText(sel, ids[i]);
+    });
+    </script>
+
+    <script src="../Admin/js/jQuery.js"></script>
+
+</script>
+
 </body>
 </html>
