@@ -1,8 +1,12 @@
 <?php
+session_start();
+include("../connections.php");
 
-
-
-
+// // Optional: check if admin is logged in
+// if (!isset($_SESSION['Admin_ID'])) {
+//     header("Location: login.php");
+//     exit;
+// }
 ?>
 
 <!DOCTYPE html>
@@ -80,19 +84,19 @@
             <div class="stats-grid">
                 <div class="stat-card stat-total">
                     <div class="stat-label">Total Complaints</div>
-                    <div class="stat-value" id="totalCount">6</div>
+                    <div class="stat-value" id="totalCount"></div>
                 </div>
                 <div class="stat-card stat-pending">
                     <div class="stat-label">Pending Review</div>
-                    <div class="stat-value" id="pendingCount">2</div>
+                    <div class="stat-value" id="pendingCount"></div>
                 </div>
                 <div class="stat-card stat-progress">
                     <div class="stat-label">In Progress</div>
-                    <div class="stat-value" id="progressCount">1</div>
+                    <div class="stat-value" id="progressCount"></div>
                 </div>
                 <div class="stat-card stat-resolved">
                     <div class="stat-label">Resolved</div>
-                    <div class="stat-value" id="resolvedCount">2</div>
+                    <div class="stat-value" id="resolvedCount"></div>
                 </div>
             </div>
 
@@ -145,10 +149,12 @@
                                 <option value="all">All Barangays</option>
                             </select>
                         </div>
+
+                
                         
                         <div class="chart-filter-group">
                             <label class="chart-filter-label" style="opacity: 0; pointer-events: none;">Actions</label>
-                            <button id="clearChartFiltersBtn" class="btn-clear-chart-filters" onclick="clearChartFilters()">
+                            <button id="clearChartFilters" class="btn-clear-chart-filters" onclick="clearAllChartFilters()">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <line x1="18" y1="6" x2="6" y2="18"></line>
                                     <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -341,6 +347,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script src="admin_dashboard.js"></script>
+    <script src="admin_dashboard2.js"></script>
 </body>
 </html>

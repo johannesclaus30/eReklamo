@@ -215,6 +215,7 @@ body {
     border-radius: 12px;
     padding: 24px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    width: 100%; /* Ensure full width */
 }
 
 .chart-header {
@@ -330,10 +331,11 @@ body {
     transform: scale(0.98);
 }
 
+/* Updated: make the chart fill the card width and use a responsive height */
 .chart-container {
     position: relative;
-    height: 350px;
     width: 100%;
+    height: clamp(320px, 45vh, 520px);
 }
 
 .chart-toggle-section {
@@ -380,6 +382,14 @@ body {
     transform: rotate(180deg);
 }
 
+.btn-archive {
+    background-color: #10b981;
+    color: white;
+}
+.btn-archive:hover {
+    background-color: #059669;
+}
+
 .subcategory-chart-section {
     margin-top: 24px;
     padding-top: 24px;
@@ -415,8 +425,24 @@ body {
     margin: 0;
 }
 
+/* Updated: responsive height and full fill for subcategory chart, too */
 .chart-container-subcategory {
-    height: 400px;
+    position: relative;
+    width: 100%;
+    height: clamp(360px, 55vh, 640px);
+}
+
+/* Force canvases to occupy their containers */
+.chart-container > canvas,
+.chart-container-subcategory > canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Optional: in case any global CSS constrains canvas width */
+canvas {
+    max-width: 100%;
 }
 
 /* Filters Section */
@@ -1113,6 +1139,7 @@ body {
         margin-top: 0;
     }
 
+    /* Smaller heights on mobile */
     .chart-container {
         height: 300px;
     }
