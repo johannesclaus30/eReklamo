@@ -3,7 +3,7 @@ session_start();
 include("../connections.php");
 
 if (!isset($_SESSION["User_ID"])) {
-    header("Location: ../signin");
+    header("Location: ../sign_in");
     exit();
 }
 

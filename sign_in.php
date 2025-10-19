@@ -56,7 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             // Redirect based on account type
                 if ($account_type == 1) {
-                    if($db_password == $User_Password) {
+                    if (password_verify($User_Password, $db_password)) {
    
                         // Optionally store User_ID or other details in session
                         session_start();

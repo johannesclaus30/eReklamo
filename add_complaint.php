@@ -2,19 +2,23 @@
 session_start();
 include("connections.php");
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 if (isset($_SESSION["User_ID"])) {
     $User_ID = $_SESSION["User_ID"];
     // $get_record = mysqli_query($connections, "SELECT * FROM user WHERE User_ID='$User_ID'");
     // while($row_edit = mysqli_fetch_assoc($get_record)) {
     //     $User_Email = $row_edit["User_Email"];
     // }
-    $stmt = mysqli_prepare($connections, "SELECT User_Email FROM user WHERE User_ID = ?");
+    $stmt = mysqli_prepare($connections, "SELECT User_Email, User_FirstName FROM user WHERE User_ID = ?");
     $stmt->bind_param("i", $User_ID);
     $stmt->execute();
     $result = $stmt->get_result();
     $row_edit = $result->fetch_assoc();
     $stmt->close();
     $User_Email = $row_edit["User_Email"];
+    $User_FirstName = $row_edit["User_FirstName"];
 
 
 } else {
@@ -465,30 +469,57 @@ if (isset($_FILES['photoInput'])) {
                         <div class="notification-card" id="notificationSection">
                             <div class="checkbox-group">
                                 <label class="checkbox-label">
-                                    <input type="checkbox" id="emailUpdates" name="emailUpdates" disabled>
-                                    <span class="checkbox-custom"></span>
-                                    <span class="checkbox-text">
-                                        <strong>Email Notifications</strong>
-                                        <small>Receive updates via email about your complaint status</small>
-                                    </span>
-                                </label>
 
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="smsUpdates" name="smsUpdates" disabled>
-                                    <span class="checkbox-custom"></span>
-                                    <span class="checkbox-text">
-                                        <strong>SMS Notifications</strong>
-                                        <small>Receive text message updates on your phone</small>
-                                    </span>
+                                    <?php if ($User_Email === 'Guest User') {
+                                        echo '
+                                        <input type="checkbox" id="emailUpdates" name="emailUpdates" disabled>
+                                            <span class="checkbox-custom"></span>
+                                            <span class="checkbox-text">
+                                            <strong>Email Notifications</strong>
+                                            <small>Receive updates via email about your complaint status</small>
+                                        </span>
+                                        ';
+                                    } else {
+                                        echo '
+                                        <input type="checkbox" id="emailUpdates" name="emailUpdates">
+                                            <span class="checkbox-custom"></span>
+                                            <span class="checkbox-text">
+                                            <strong>Email Notifications</strong>
+                                            <small>Receive updates via email about your complaint status</small>
+                                        </span>
+                                        ';
+
+                                        require 'PHPMailer/vendor/autoload.php';
+                                        $mail = new PHPMailer(true);
+                                        try {
+                                            $mail->isSMTP();
+                                            $mail->Host = 'smtp.gmail.com';
+                                            $mail->SMTPAuth = true;
+                                            $mail->Username = 'e.reklamo.alerts@gmail.com'; // dito yung email ng sender mo
+                                            $mail->Password = 'ljpp behd erju ddrt'; // dito yung password ng sender mo
+                                            $mail->SMTPSecure = 'tls';
+                                            $mail->Port = 587;
+
+                                            $mail->setFrom('e.reklamo.alerts@gmail.com', 'eReklamo | Notifications'); // mula kanino ? editable yan bahala kana
+                                            $mail->addAddress($User_Email); // papunta kanino ? editable yan bahala kana
+                                            $mail->isHTML(true);
+                                            $mail->Header = 'MIME-Version: 1.0\r\nContent-Type: text/plain; charset=utf-8\r\n
+                                            X-Priority: 1\r\n'; // importante to
+                                            $mail->Subject = 'We Received Your Complaint! | eReklamo';
+                                            $mail->Body    = 'Hello '.$User_FirstName.',<br><br>Thank you for reaching out to eReklamo! We have received your complaint and our team is currently reviewing it.<br><br>
+                                            </b>Complaint Tracking ID: <b>'.$Complaint_TrackingNumber.'</b> <br><br>Best regards,<br>eReklamo Team';
+                                            $mail->send();
+                                        } catch (Exception $e) {
+                                            $alert = "errorMail";
+                                        }
+                                    }
+                                    ?>
+
+                                    
                                 </label>
                             </div>
 
                             <div class="notification-notice">
-                                <svg class="notice-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                    <line x1="12" y1="16" x2="12" y2="12"></line>
-                                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                                </svg>
                                 <p>
                                     <a href="sign_in" class="link">Sign in</a> to your account to enable email and SMS notifications
                                 </p>

@@ -117,7 +117,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                 </div>
                 <div class="hero-image">
-                    <img src="imgs/home_photo.jpg" alt="Community">
+                    <img src="imgs/home_photo2.jpg" alt="Community">
                     <div class="floating-card card-1">
                         <div class="card-icon">✓</div>
                         <div class="card-text">

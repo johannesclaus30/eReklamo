@@ -60,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $User_PasswordErr = "Password must be at least 6 characters!";
     }
     if ($User_Password !== $User_ConfirmPassword) {
-        $User_ConfirmPasswordErr = "Password did not match!";
+        $alert = "passErr";
     }
 
     // Proceed only if there are no errors
@@ -112,7 +112,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         //echo "<script>alert('New Record has been inserted!');</script>";
         //echo "<script>window.location.href='sign_in';</script>";
         $alert = "accountInserted";
-        exit;
     } else {
         // Optional: avoid echoing a generic "Walang laman." here; rely on field errors instead
         // echo "Walang laman.";
@@ -220,6 +219,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                 >
                                 <span class="error"><?php echo $User_EmailErr; ?></span>
                             </div>
+                            <p class="field-hint">Required for Email notifications</p>
                         </div>
 
                         <div class="form-group">
@@ -232,11 +232,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                     type="tel" 
                                     id="phone" 
                                     name="User_PhoneNumber" 
-                                    placeholder="+63 912 345 6789"
+                                    placeholder="0912 345 6789"
                                     value="<?php echo $User_PhoneNumber; ?>"
                                 >
                             </div>
-                            <p class="field-hint">Required for SMS notifications</p>
                         </div>
 
                         <div class="address-section">
@@ -359,7 +358,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                         <circle cx="12" cy="12" r="3"></circle>
                                     </svg>
                                 </button>
-                            </div>
+                            </div> <br>
+                            <span class="error"><?php echo $User_ConfirmPasswordErr; ?></span>
                         </div>
 
                         <div class="checkbox-wrapper">
@@ -432,10 +432,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 }).then(() => {
                     window.location.href = 'sign_in';
                 });
-                <?php elseif ($alert == "notfound"): ?>
+                <?php elseif ($alert == "passErr"): ?>
                 Swal.fire({
-                    title: 'Not Found!',
-                    text: 'No complaint found with that tracking number.',
+                    title: 'Error!',
+                    text: 'Passwords do not Match. Try Again',
                     icon: 'warning',
                     confirmButtonText: 'OK'
                 });

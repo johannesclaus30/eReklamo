@@ -9,6 +9,14 @@ if(isset($_SESSION["Complaint_ID"])) {
     $get_record = mysqli_query($connections,"SELECT * FROM complaint WHERE Complaint_ID = '$Complaint_ID'");
     while($row_edit = mysqli_fetch_assoc($get_record)) {
         $Tracking_Number = $row_edit['Complaint_TrackingNumber'];
+        $Complaint_Status = $row_edit['Complaint_Status'];
+        $Created_At = $row_edit['Created_At'];
+        $Progress_Date = $row_edit['Progress_Date'];
+        $Resolved_Date = $row_edit['Resolved_Date'];
+
+        $complaintReceived = date("F j, Y, g:i a", strtotime($Created_At));
+        $complaintInProgress = date("F j, Y", strtotime($Progress_Date));
+        $complaintResolved = date("F j, Y", strtotime($Resolved_Date));
     }
 
 } else if(isset($_SESSION["Complaint_TrackingNumber"])) {
@@ -115,44 +123,146 @@ if(isset($_SESSION["Complaint_ID"])) {
                     <div class="timeline-preview">
                         <h3 class="timeline-title">Complaint Status Timeline</h3>
                         <div class="timeline">
-                            <div class="timeline-item active">
-                                <div class="timeline-marker">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                        <polyline points="20 6 9 17 4 12"></polyline>
-                                    </svg>
-                                </div>
-                                <div class="timeline-content">
-                                    <strong>Complaint Received</strong>
-                                    <span>Just now</span>
-                                </div>
-                            </div>
-                            <div class="timeline-item">
-                                <div class="timeline-marker">
-                                    <div class="marker-dot"></div>
-                                </div>
-                                <div class="timeline-content">
-                                    <strong>Under Review</strong>
-                                    <span>Pending</span>
-                                </div>
-                            </div>
-                            <div class="timeline-item">
-                                <div class="timeline-marker">
-                                    <div class="marker-dot"></div>
-                                </div>
-                                <div class="timeline-content">
-                                    <strong>In Progress</strong>
-                                    <span>Pending</span>
-                                </div>
-                            </div>
-                            <div class="timeline-item">
-                                <div class="timeline-marker">
-                                    <div class="marker-dot"></div>
-                                </div>
-                                <div class="timeline-content">
-                                    <strong>Resolved</strong>
-                                    <span>Pending</span>
-                                </div>
-                            </div>
+                            <?php if ($Complaint_Status){
+                                if ($Complaint_Status == "pending") {
+                                    echo '
+                                        <div class="timeline-item active">
+                                            <div class="timeline-marker">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                            </div>
+                                            <div class="timeline-content">
+                                                <strong>Complaint Received</strong>
+                                                <span>' . htmlspecialchars($complaintReceived) . '</span>
+                                            </div>
+                                        </div>
+                                        <div class="timeline-item">
+                                            <div class="timeline-marker">
+                                                <div class="marker-dot"></div>
+                                            </div>
+                                            <div class="timeline-content">
+                                                <strong>Under Review</strong>
+                                                <span>Pending</span>
+                                            </div>
+                                        </div>
+                                        <div class="timeline-item">
+                                            <div class="timeline-marker">
+                                                <div class="marker-dot"></div>
+                                            </div>
+                                            <div class="timeline-content">
+                                                <strong>In Progress</strong>
+                                                <span>Pending</span>
+                                            </div>
+                                        </div>
+                                        <div class="timeline-item">
+                                            <div class="timeline-marker">
+                                                <div class="marker-dot"></div>
+                                            </div>
+                                            <div class="timeline-content">
+                                                <strong>Resolved</strong>
+                                                <span>Pending</span>
+                                            </div>
+                                        </div>
+                                    ';
+                                } else if ($Complaint_Status == "in-progress") {
+                                    echo '
+                                        <div class="timeline-item active">
+                                            <div class="timeline-marker">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                            </div>
+                                            <div class="timeline-content">
+                                                <strong>Complaint Received</strong>
+                                                <span>' . htmlspecialchars($complaintReceived) . '</span>
+                                            </div>
+                                        </div>
+                                        <div class="timeline-item active">
+                                            <div class="timeline-marker">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                            </div>
+                                            <div class="timeline-content">
+                                                <strong>Under Review</strong>
+                                                <span>' . htmlspecialchars($complaintInProgress) . '</span>
+                                            </div>
+                                        </div>
+                                        <div class="timeline-item active">
+                                            <div class="timeline-marker">
+                                                <div class="marker-dot"></div>
+                                            </div>
+                                            <div class="timeline-content">
+                                                <strong>In Progress</strong>
+                                                <span>' . htmlspecialchars($complaintInProgress) . '</span>
+                                            </div>
+                                        </div>
+                                        <div class="timeline-item">
+                                            <div class="timeline-marker">
+                                                <div class="marker-dot"></div>
+                                            </div>
+                                            <div class="timeline-content">
+                                                <strong>Resolved</strong>
+                                                <span>Pending</span>
+                                            </div>
+                                        </div>
+                                    ';
+                                } else if ($Complaint_Status == "resolved") {
+                                    echo '
+                                        <div class="timeline-item active">
+                                            <div class="timeline-marker">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                            </div>
+                                            <div class="timeline-content">
+                                                <strong>Complaint Received</strong>
+                                                <span>' . htmlspecialchars($complaintReceived) . '</span>
+                                            </div>
+                                        </div>
+                                        <div class="timeline-item active">
+                                            <div class="timeline-marker">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                            </div>
+                                            <div class="timeline-content">
+                                                <strong>Under Review</strong>
+                                                <span>' . htmlspecialchars($complaintInProgress) . '</span>
+                                            </div>
+                                        </div>
+                                        <div class="timeline-item active">
+                                            <div class="timeline-marker">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                            </div>
+                                            <div class="timeline-content">
+                                                <strong>In Progress</strong>
+                                                <span>' . htmlspecialchars($complaintInProgress) . '</span>
+                                            </div>
+                                        </div>
+                                        <div class="timeline-item active">
+                                            <div class="timeline-marker">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                            </div>
+                                            <div class="timeline-content">
+                                                <strong>Resolved</strong>
+                                                <span>' . htmlspecialchars($complaintResolved) . '</span>
+                                            </div>
+                                        </div>
+                                    ';
+                                } else {
+                                    echo '<center><h1>Unlisted Complaint</h1><p>Your complaint may be rejected or archived.</p><i>Please submit a new complaint.</i></center>';
+                                }
+                            } else {
+                                $active_steps = 0;  
+                            }  
+                                ?>
+                            
                         </div>
                     </div>
 
