@@ -62,7 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         session_start();
                         $_SESSION["User_ID"] = $user["User_ID"];
 
-                        header("Location: Admin/admin_dashboard");
+                        header("Location: admin/admin_dashboard");
                     } else {
                         $User_PasswordErr = "Incorrect password!";
                     }
@@ -75,7 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     // Optionally store User_ID or other details in session
                     $_SESSION["User_ID"] = $user["User_ID"];
 
-                    header("Location: User/user_dashboard");
+                    header("Location: user/user_dashboard");
                 } else {
                     $User_PasswordErr = "Incorrect password!";
                 }
