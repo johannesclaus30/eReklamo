@@ -20,8 +20,6 @@ if(isset($_SESSION["Complaint_ID"])) {
     exit();
 }
 
-
-
 ?>
 
 <!DOCTYPE html>
@@ -167,13 +165,37 @@ if(isset($_SESSION["Complaint_ID"])) {
                             </svg>
                             Submit Another Complaint
                         </button>
-                        <button class="btn btn-outline" onclick="window.location.href='index'">
-                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                                <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                            </svg>
-                            Back to Home
-                        </button>
+                        <?php
+                        if (isset($_SESSION["User_ID"])) {
+                            $User_ID = $_SESSION["User_ID"];
+                        } else {
+                            $User_ID = 1; // Guest
+                        }
+
+                        if ($User_ID == 1) {
+                            echo '
+                            <button class="btn btn-outline" onclick="window.location.href=\'index\'">
+                                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                                </svg>
+                                Back to Home
+                            </button>
+                            ';
+                        } else {
+                            echo '
+                            <button class="btn btn-outline" onclick="window.location.href=\'user/user_dashboard\'">
+                                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                                </svg>
+                                Back to Dashboard
+                            </button>
+                            ';
+                        }
+                        
+                        ?>
+                        
                     </div>
 
                     <!-- Additional Info -->

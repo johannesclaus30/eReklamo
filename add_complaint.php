@@ -162,6 +162,7 @@ if (isset($_FILES['photoInput'])) {
     }
 }
     $_SESSION["Complaint_ID"] = $Complaint_ID;
+    $_SESSION["User_ID"] = $User_ID;
     }
 }
 ?>
