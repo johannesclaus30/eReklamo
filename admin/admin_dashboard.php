@@ -150,8 +150,6 @@ include("../connections.php");
                             </select>
                         </div>
 
-                
-                        
                         <div class="chart-filter-group">
                             <label class="chart-filter-label" style="opacity: 0; pointer-events: none;">Actions</label>
                             <button id="clearChartFilters" class="btn-clear-chart-filters" onclick="clearAllChartFilters()">
@@ -173,7 +171,7 @@ include("../connections.php");
                             <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="6 9 12 15 18 9"></polyline>
                             </svg>
-                            View Detailed Breakdown by Subcategory
+                            <span class="toggle-label">View Detailed Breakdown by Subcategory</span>
                         </button>
                     </div>
                     
@@ -226,9 +224,7 @@ include("../connections.php");
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="complaintsTableBody">
-                        <!-- Rows will be inserted by JavaScript -->
-                    </tbody>
+                    <tbody id="complaintsTableBody"></tbody>
                     <tbody id="emptyState" style="display: none;">
                         <tr>
                             <td colspan="7" class="empty-state">
@@ -242,6 +238,51 @@ include("../connections.php");
                     </tbody>
                 </table>
             </div>
+
+            <!-- Archived Complaints -->
+            <div class="chart-section" style="margin-top: 24px;">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div>
+                            <h3>Archived Complaints</h3>
+                            <p class="chart-subtitle">Archived items are hidden from the main table, stats, and charts</p>
+                        </div>
+                        <button id="toggleArchivedBtn" class="btn btn-outline" onclick="toggleArchivedSection()">
+                            Show/Hide
+                        </button>
+                    </div>
+                    <div id="archivedSection" style="display: none;">
+                        <div class="table-container">
+                            <table class="complaints-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tracking #</th>
+                                        <th>Category</th>
+                                        <th>Description</th>
+                                        <th>Location</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="archivedTableBody"></tbody>
+                                <tbody id="archivedEmptyState" style="display: none;">
+                                    <tr>
+                                        <td colspan="7" class="empty-state">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                                <polyline points="14 2 14 8 20 8"></polyline>
+                                            </svg>
+                                            <p>No archived complaints.</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </main>
 
@@ -308,7 +349,7 @@ include("../connections.php");
                 </div>
 
                 <div id="modalDeleteSection" class="modal-delete-section">
-                    <button class="btn btn-delete" onclick="confirmDelete(selectedComplaint.id)">
+                    <button class="btn btn-delete" onclick="confirmDelete(selectedComplaint?.id)">
                         <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <polyline points="3 6 5 6 21 6"></polyline>
                             <path d="m19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>

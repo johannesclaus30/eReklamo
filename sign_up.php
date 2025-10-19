@@ -1,5 +1,9 @@
 <?php
 include("connections.php");
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 $User_ID = $User_FirstName = $User_LastName = $User_Email = $User_PhoneNumber = $User_Password = $User_ConfirmPassword = $User_Type = $User_Region_Name = $User_Province_Name = $User_City_Name = $User_Barangay_Name = $User_Street =  $User_HouseNo = $User_ZIP = "";
 
 $User_FirstNameErr = $User_LastNameErr = $User_EmailErr = $User_PhoneNumberErr = $User_PasswordErr = $User_ConfirmPasswordErr = $User_RegionErr = $User_ProvinceErr = $User_CityErr = $User_BarangayErr = $User_StreetErr =  $User_HouseNoErr  = $User_ZIPErr = "";
@@ -63,6 +67,29 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $hasErrors = $User_FirstNameErr || $User_LastNameErr || $User_EmailErr || $User_PasswordErr || $User_ConfirmPasswordErr || $User_RegionErr || $User_ProvinceErr || $User_StreetErr;
 
     if (!$hasErrors) {
+
+        // Send confirmation email
+        require 'PHPMailer/vendor/autoload.php';
+        $mail = new PHPMailer(true);
+        try {
+            $mail->isSMTP();
+            $mail->Host = 'smtp.gmail.com';
+            $mail->SMTPAuth = true;
+            $mail->Username = 'e.reklamo.alerts@gmail.com'; // dito yung email ng sender mo
+            $mail->Password = 'ljpp behd erju ddrt'; // dito yung password ng sender mo
+            $mail->SMTPSecure = 'tls';
+            $mail->Port = 587;
+
+            $mail->setFrom('e.reklamo.alerts@gmail.com', 'eReklamo | Notifications'); // mula kanino ? editable yan bahala kana
+            $mail->addAddress($User_Email); // papunta kanino ? editable yan bahala kana
+            $mail->isHTML(true);
+            $mail->Header = 'MIME-Version: 1.0\r\nContent-Type: text/plain; charset=utf-8\r\n
+            X-Priority: 1\r\n'; // importante to
+            $mail->Subject = 'Welcome to eReklamo, '.$User_FirstName.'!';
+            $mail->Body    = 'Hello '.$User_FirstName.',<br><br>Welcome to eReklamo! Your account has been successfully created.<br><br>Thank you for joining us in making a difference in our community!<br><br>Best regards,<br>eReklamo Team';
+            $mail->send();
+        }
+
         // IMPORTANT: hash the password
         $hash = password_hash($User_Password, PASSWORD_DEFAULT);
 
