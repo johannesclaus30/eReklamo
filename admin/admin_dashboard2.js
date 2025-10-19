@@ -64,13 +64,23 @@ window.addEventListener('DOMContentLoaded', () => {
       showToast('Failed to load complaints from database.', 'error');
     });
 
-  // Filter event listeners
+  // Chart filters
   document.getElementById('chartRegionFilter').addEventListener('change', handleRegionChange);
   document.getElementById('chartProvinceFilter').addEventListener('change', handleProvinceChange);
   document.getElementById('chartCityFilter').addEventListener('change', handleCityChange);
   document.getElementById('chartBarangayFilter').addEventListener('change', updateChartWithFilters);
   document.getElementById('chartPeriod').addEventListener('change', updateChartWithFilters);
   document.getElementById('clearChartFilters').addEventListener('click', clearAllChartFilters);
+
+  // Table filters (restore)
+  const searchEl = document.getElementById('searchInput');
+  const statusEl = document.getElementById('statusFilter');
+  if (searchEl) searchEl.addEventListener('input', filterComplaints);
+  if (statusEl) statusEl.addEventListener('change', filterComplaints);
+
+  // Subcategory toggle (wire up in JS too)
+  const toggleBtn = document.getElementById('toggleSubcategoryBtn');
+  if (toggleBtn) toggleBtn.addEventListener('click', toggleSubcategoryChart);
 });
 
 // ====================== STATS ======================
@@ -126,14 +136,17 @@ function renderComplaints(data) {
 }
 
 function filterComplaints() {
-  const term = document.getElementById('searchInput').value.toLowerCase();
-  const status = document.getElementById('statusFilter').value;
+  const term = (document.getElementById('searchInput')?.value || '').toLowerCase();
+  const status = document.getElementById('statusFilter')?.value || 'all';
 
   const filtered = complaints.filter(c =>
-    (c.trackingNumber.toLowerCase().includes(term) ||
-     c.description.toLowerCase().includes(term) ||
-     c.location.toLowerCase().includes(term) ||
-     c.category.toLowerCase().includes(term)) &&
+    (
+      (c.trackingNumber || '').toLowerCase().includes(term) ||
+      (c.description || '').toLowerCase().includes(term) ||
+      (c.location || '').toLowerCase().includes(term) ||
+      (c.category || '').toLowerCase().includes(term) ||
+      (c.subcategory || '').toLowerCase().includes(term)
+    ) &&
     (status === 'all' || c.status === status)
   );
 
@@ -143,10 +156,20 @@ function filterComplaints() {
 // ====================== STATUS + ARCHIVE ======================
 function handleStatusChange(id, status) {
   complaints = complaints.map(c => c.id == id ? {...c, status} : c);
+  if (selectedComplaint && selectedComplaint.id == id) {
+    selectedComplaint.status = status;
+    const s = document.getElementById('modalStatusSelect');
+    if (s) s.className = `status-select ${statusColors[status] || ''}`;
+  }
   updateStats();
   filterComplaints();
   updateChartWithFilters();
   showToast('Status updated successfully!', 'success');
+}
+
+function handleModalStatusChange(status) {
+  if (!selectedComplaint) return;
+  handleStatusChange(selectedComplaint.id, status);
 }
 
 function archiveComplaint(id) {
@@ -162,16 +185,16 @@ function viewComplaintDetails(id) {
   const c = complaints.find(x => x.id == id);
   if (!c) return;
   selectedComplaint = c;
-  document.getElementById('modalTrackingNumber').textContent = c.trackingNumber;
-  document.getElementById('modalCategory').textContent = c.category;
+  document.getElementById('modalTrackingNumber').textContent = c.trackingNumber || '';
+  document.getElementById('modalCategory').textContent = c.category || '';
   document.getElementById('modalSubcategory').textContent = c.subcategory || '—';
-  document.getElementById('modalDescription').textContent = c.description;
-  document.getElementById('modalLocation').textContent = c.location;
-  document.getElementById('modalSubmittedBy').textContent = c.submittedBy;
+  document.getElementById('modalDescription').textContent = c.description || '';
+  document.getElementById('modalLocation').textContent = c.location || '';
+  document.getElementById('modalSubmittedBy').textContent = c.submittedBy || '';
   document.getElementById('modalDateSubmitted').textContent = formatDate(c.dateSubmitted);
   const s = document.getElementById('modalStatusSelect');
   s.value = c.status;
-  s.className = `status-select ${statusColors[c.status]}`;
+  s.className = `status-select ${statusColors[c.status] || ''}`;
   document.getElementById('detailsModal').style.display = 'flex';
 }
 
@@ -199,7 +222,7 @@ function initializeCharts() {
     },
     options: { 
       responsive: true,
-      maintainAspectRatio: false, // allow full-width/height fill of parent
+      maintainAspectRatio: false,
       layout: { padding: { top: 8, right: 8, bottom: 0, left: 8 } },
       plugins: { legend: { display: false } },
       scales: { 
@@ -262,6 +285,28 @@ function updateCharts(data) {
   subcategoryChart.data.datasets[0].backgroundColor = subLabels.map(l => getCategoryColor(l.split(' - ')[0]));
   subcategoryChart.data.datasets[0].borderColor = subLabels.map(l => getCategoryBorder(l.split(' - ')[0]));
   subcategoryChart.update();
+}
+
+// ====================== SUBCATEGORY TOGGLE ======================
+function toggleSubcategoryChart() {
+  const section = document.getElementById('subcategoryChartSection');
+  const btn = document.getElementById('toggleSubcategoryBtn');
+  const isHidden = getComputedStyle(section).display === 'none';
+
+  if (isHidden) {
+    section.style.display = 'block';
+    btn.classList.add('active');
+    // Ensure Chart.js measures the now-visible container
+    requestAnimationFrame(() => {
+      if (subcategoryChart) {
+        subcategoryChart.resize();
+        subcategoryChart.update();
+      }
+    });
+  } else {
+    section.style.display = 'none';
+    btn.classList.remove('active');
+  }
 }
 
 // ====================== FILTER HELPERS ======================

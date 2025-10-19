@@ -650,6 +650,7 @@ canvas {
 }
 
 .empty-state {
+    align-items: center;
     text-align: center;
     padding: 64px 32px !important;
 }
