@@ -1,24 +1,16 @@
 <?php
-
 session_start();
+include("../connections.php");
 
-if(isset($_SESSION["User_ID"])) {
-    $User_ID = $_SESSION["User_ID"];
-    include("../connections.php");
-
-    $get_record = mysqli_query($connections,"SELECT * FROM user WHERE User_ID = '$User_ID'");
-    while($row_edit = mysqli_fetch_assoc($get_record)) {
-        $User_Email = $row_edit['User_Email'];
-    }
-} else {
-    // Redirect to login if not logged in
-    header("Location: ../sign_in");
+if (!isset($_SESSION["User_ID"])) {
+    header("Location: ../signin");
     exit();
 }
 
-
-
+$User_ID = $_SESSION["User_ID"];
+$User_Email = $_SESSION["User_Email"];
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -118,6 +110,13 @@ if(isset($_SESSION["User_ID"])) {
         </div>
     </main>
 
-    <script src="user_dashboard.js"></script>
+    <script src="user_dashboard2.js"></script>
+    <script>
+        // Convert PHP array to JavaScript
+        const complaints = <?php echo json_encode($complaints); ?>;
+    </script>
+
+
+
 </body>
 </html>
