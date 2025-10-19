@@ -88,8 +88,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $mail->Subject = 'Welcome to eReklamo, '.$User_FirstName.'!';
             $mail->Body    = 'Hello '.$User_FirstName.',<br><br>Welcome to eReklamo! Your account has been successfully created.<br><br>Thank you for joining us in making a difference in our community!<br><br>Best regards,<br>eReklamo Team';
             $mail->send();
+        } catch (Exception $e) {
+            $alert = "errorMail";
         }
-
         // IMPORTANT: hash the password
         $hash = password_hash($User_Password, PASSWORD_DEFAULT);
 
@@ -108,8 +109,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
 
-        echo "<script>alert('New Record has been inserted!');</script>";
-        echo "<script>window.location.href='sign_in';</script>";
+        //echo "<script>alert('New Record has been inserted!');</script>";
+        //echo "<script>window.location.href='sign_in';</script>";
+        $alert = "accountInserted";
         exit;
     } else {
         // Optional: avoid echoing a generic "Walang laman." here; rely on field errors instead
@@ -131,6 +133,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up - eReklamo</title>
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="stylesheet" href="signup.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -404,6 +408,42 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         setText(sel, ids[i]);
     });
     </script>
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        <?php if ($_SERVER["REQUEST_METHOD"] == "POST"): ?>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <script>
+                <?php if ($alert == "errorMail"): ?>
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Failed to send confirmation email. Please try again later.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                <?php elseif ($alert == "accountInserted"): ?>
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Account Created! Redirecting...',
+                    icon: 'success',
+                    showConfirmButton: false,
+                    timer: 1000
+                }).then(() => {
+                    window.location.href = 'sign_in';
+                });
+                <?php elseif ($alert == "notfound"): ?>
+                Swal.fire({
+                    title: 'Not Found!',
+                    text: 'No complaint found with that tracking number.',
+                    icon: 'warning',
+                    confirmButtonText: 'OK'
+                });
+                <?php endif; ?>
+            </script>
+        <?php endif; ?>
+
+        </script>
 
 
 </body>
