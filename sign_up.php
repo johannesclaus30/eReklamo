@@ -42,7 +42,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
     if ($User_Email && !filter_var($User_Email, FILTER_VALIDATE_EMAIL)) {
         $User_EmailErr = "Invalid email format";
+    } else {
+        // Check for existing email
+        $check_email = mysqli_query($connections, "SELECT * FROM user WHERE User_Email = '$User_Email'");
+        $check_email_row = mysqli_num_rows($check_email);
+
+        if($check_email_row > 0) {
+            $User_EmailErr = "Email is already registered!";
+        }
     }
+
     if ($User_Password && strlen($User_Password) < 6) {
         $User_PasswordErr = "Password must be at least 6 characters!";
     }

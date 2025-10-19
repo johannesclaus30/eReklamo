@@ -10,6 +10,10 @@ if(isset($_SESSION["User_ID"])) {
     while($row_edit = mysqli_fetch_assoc($get_record)) {
         $User_Email = $row_edit['User_Email'];
     }
+} else {
+    // Redirect to login if not logged in
+    header("Location: ../sign_in");
+    exit();
 }
 
 
@@ -35,8 +39,8 @@ if(isset($_SESSION["User_ID"])) {
                 </div>
                 <nav class="nav">
                     <span class="user-email" id="userEmail"><?php echo $User_Email; ?></span>
-                    <a href="../index" class="btn btn-outline-white">Home</a>
-                    <a href="../sign_in" class="btn btn-outline-white">Sign Out</a>
+                    <a href="../account_settings" class="settings-btn">Settings</a>
+                    <a href="../signout" class="btn btn-outline-white">Sign Out</a>
                 </nav>
             </div>
         </div>

@@ -1,6 +1,44 @@
 <?php
 
+session_start();
+include("connections.php");
+
 $User_FirstName = $User_LastName = $User_Email = $User_PhoneNumber = $User_Password = $User_Type = "";
+$Complaint_ID = $Complaint_TrackingNumber = "";
+$alert = ""; // Flag for SweetAlert messages
+
+if (isset($_SESSION["Complaint_TrackingNumber"])) {
+    $Complaint_TrackingNumber = $_SESSION["Complaint_TrackingNumber"];
+
+    // Fetch complaint details from the database using the tracking number
+    $get_record = mysqli_query($connections, "SELECT * FROM complaint WHERE Complaint_TrackingNumber = '$Complaint_TrackingNumber'");
+    while ($row_edit = mysqli_fetch_assoc($get_record)) {
+        $Complaint_ID = $row_edit['Complaint_ID'];
+        $Complaint_TrackingNumber = $row_edit['Complaint_TrackingNumber'];
+    }
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if(empty($_POST["trackingNumberInput"])) {
+        echo "<script>alert('Please enter a tracking number.');</script>";
+    } else {
+        $Complaint_TrackingNumber = $_POST["trackingNumberInput"];
+    }
+    if($Complaint_TrackingNumber) {
+        //echo "<script>window.location.href='track_complaint?trackingNumber=" . $Complaint_TrackingNumber . "';</script>";
+        //echo "<script>window.location.href='track_complaint?trackingNumber=" . $Complaint_TrackingNumber . "';</script>";
+        $check_record = mysqli_query($connections, "SELECT * FROM complaint WHERE Complaint_TrackingNumber = '$Complaint_TrackingNumber'");
+        if (mysqli_num_rows($check_record) > 0) {
+            // Store tracking number in session
+            $_SESSION["Complaint_TrackingNumber"] = $Complaint_TrackingNumber;
+            $alert = "found";
+           //echo "<script>window.location.href='tracking_page';</script>";
+        } else {
+            $alert = "notfound";
+        }
+    }
+}
+
 
 ?>
 
@@ -13,6 +51,8 @@ $User_FirstName = $User_LastName = $User_Email = $User_PhoneNumber = $User_Passw
     <link rel="stylesheet" href="index_design.css">
     <link rel="icon" type="image/png" href="logos/eReklamo_Icon.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 </head>
 <body>
     <!-- Header -->
@@ -302,6 +342,7 @@ $User_FirstName = $User_LastName = $User_Email = $User_PhoneNumber = $User_Passw
     <!-- Track Complaint Modal -->
     <div id="trackingModal" class="tracking-modal">
         <div class="tracking-modal-content">
+            <form method="POST" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
             <div class="tracking-modal-header">
                 <h3>Track Your Complaint</h3>
                 <button onclick="closeTrackingModal()" class="modal-close-btn">
@@ -320,15 +361,17 @@ $User_FirstName = $User_LastName = $User_Email = $User_PhoneNumber = $User_Passw
                     <input 
                         class="track-complain"
                         type="text" 
-                        id="trackingInput" 
-                        placeholder="e.g., REKLAMO-2024-001234"
+                        id="trackingInput"
+                        name="trackingNumberInput" 
+                        placeholder="e.g., ERK-123456"
                         onkeypress="if(event.key === 'Enter') trackComplaint()"
                     />
                 </div>
-                <button onclick="trackComplaint()" class="btn btn-large btn-primary btn-full">
+                <button type="submit" class="btn btn-large btn-primary btn-full">
                     Track Status
                 </button>
             </div>
+            </form>
         </div>
     </div>
 
@@ -343,15 +386,15 @@ $User_FirstName = $User_LastName = $User_Email = $User_PhoneNumber = $User_Passw
             document.getElementById('trackingInput').value = '';
         }
 
-        function trackComplaint() {
-            const trackingNumber = document.getElementById('trackingInput').value.trim();
-            if (trackingNumber) {
-                // Store tracking number in sessionStorage
-                sessionStorage.setItem('trackingNumber', trackingNumber);
-                // Redirect to tracking page
-                window.location.href = 'tracking_page';
-            }
-        }
+        // function trackComplaint() {
+        //     const trackingNumber = document.getElementById('trackingInput').value.trim();
+        //     if (trackingNumber) {
+        //         // Store tracking number in sessionStorage
+        //         sessionStorage.setItem('trackingNumber', trackingNumber);
+        //         // Redirect to tracking page
+        //         window.location.href = 'tracking_page';
+        //     }
+        // }
 
         // Close modal when clicking outside
         window.onclick = function(event) {
@@ -368,5 +411,41 @@ $User_FirstName = $User_LastName = $User_Email = $User_PhoneNumber = $User_Passw
             }
         });
     </script>
+   <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        <?php if ($_SERVER["REQUEST_METHOD"] == "POST"): ?>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <script>
+                <?php if ($alert == "empty"): ?>
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Please enter a tracking number.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                <?php elseif ($alert == "found"): ?>
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Complaint found! Redirecting...',
+                    icon: 'success',
+                    showConfirmButton: false,
+                    timer: 1000
+                }).then(() => {
+                    window.location.href = 'tracking_page.php';
+                });
+                <?php elseif ($alert == "notfound"): ?>
+                Swal.fire({
+                    title: 'Not Found!',
+                    text: 'No complaint found with that tracking number.',
+                    icon: 'warning',
+                    confirmButtonText: 'OK'
+                });
+                <?php endif; ?>
+            </script>
+        <?php endif; ?>
+
+        </script>
+
 </body>
 </html>

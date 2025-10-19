@@ -310,59 +310,87 @@ function updateUploadStates() {
 
 // Form submission
 document.getElementById('complaintForm').addEventListener('submit', function(e) {
-    e.preventDefault(); // Prevent default form submission for custom handling
+    e.preventDefault(); // Stop default submission
 
     const category = document.getElementById('category').value;
     const subcategory = document.getElementById('subcategory').value;
     const description = document.getElementById('description').value;
     const otherCategory = document.getElementById('otherCategory').value;
-    
-    // Validate required fields
+
+    // Validate fields (using SweetAlert instead of alert)
     if (!category || !description) {
-        alert('Please fill in all required fields');
+        Swal.fire({
+            icon: 'warning',
+            title: 'Incomplete Form',
+            text: 'Please fill in all required fields before submitting.',
+            confirmButtonColor: '#ef4444'
+        });
         return;
     }
-    
-    // If "Others" category is selected, validate the "Other" text field
-    if (category === 'others') {
-        if (!otherCategory || otherCategory.trim() === '') {
-            alert('Please specify your complaint in the text field');
-            return;
-        }
-    } else {
-        // For other categories, validate subcategory
-        if (!subcategory) {
-            alert('Please select a subcategory');
-            return;
-        }
+
+    if (category === 'others' && (!otherCategory || otherCategory.trim() === '')) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Missing Details',
+            text: 'Please specify your complaint in the text field.',
+            confirmButtonColor: '#f97316'
+        });
+        return;
     }
 
-    // Create FormData object to send files and form data
-    const formData = new FormData(this);
-    
-    // Append photos to FormData
-    photos.forEach((photo, index) => {
-        formData.append('photoInput[]', photo); // Use array notation for multiple files
-    });
-
-    // Append video if it exists
-    if (video) {
-        formData.append('videoInput', video);
+    if (category !== 'others' && !subcategory) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'No Subcategory Selected',
+            text: 'Please select a subcategory.',
+            confirmButtonColor: '#f97316'
+        });
+        return;
     }
 
-    // Send form data using Fetch API
-    fetch(this.action, {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.text())
-    .then(data => {
-        console.log('Server response:', data); // Log server response for debugging
-        alert('Complaint submitted successfully!'); // Temporary alert
-        window.location.href = 'add_complaint?notify=Complaint submitted successfully!'; // Redirect
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('There was an error submitting the complaint.');
+    // Confirm submission before sending
+    Swal.fire({
+        title: 'Submit Complaint?',
+        text: 'Please confirm that all details are correct before submission.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#10b981',
+        cancelButtonColor: '#ef4444',
+        confirmButtonText: 'Yes, submit it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Prepare form data
+            const formData = new FormData(e.target);
+            photos.forEach((photo) => formData.append('photoInput[]', photo));
+            if (video) formData.append('videoInput', video);
+
+            // Send data using Fetch
+            fetch(e.target.action, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log('Server response:', data);
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Complaint Submitted Successfully!',
+                    text: 'Your complaint has been received and is being processed.',
+                    confirmButtonColor: '#10b981'
+                }).then(() => {
+                    window.location.href = 'tracking_page.php';
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Submission Failed',
+                    text: 'There was an error submitting your complaint. Please try again later.',
+                    confirmButtonColor: '#ef4444'
+                });
+            });
+        }
     });
 });

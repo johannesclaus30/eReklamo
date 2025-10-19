@@ -74,8 +74,8 @@ const statusIcons = {
 
 // Load user email from localStorage
 window.addEventListener('DOMContentLoaded', function() {
-    const userEmail = localStorage.getItem('<?php ec ?>') || 'user@example.com';
-    document.getElementById('userEmail').textContent = userEmail;
+    // const userEmail = localStorage.getItem('<?php ec ?>') || 'user@example.com';
+    // document.getElementById('userEmail').textContent = userEmail;
     
     populateLocationFilter();
     renderComplaints(complaints);

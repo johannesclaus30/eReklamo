@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Settings - eReklamo</title>
+    <link rel="stylesheet" href="account_settings.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <h1 class="logo-text">eReklamo</h1>
+                </div>
+                <a href="user_dashboard.html" class="btn btn-outline">
+                    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <h2 class="page-title">Account Settings</h2>
+                <p class="page-description">Manage your account information and preferences</p>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs-container">
+                <div class="tabs-nav">
+                    <button class="tab-btn active" data-tab="personal">
+                        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        Personal Info
+                    </button>
+                    <button class="tab-btn" data-tab="address">
+                        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        Address
+                    </button>
+                    <button class="tab-btn" data-tab="password">
+                        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                        Password
+                    </button>
+                </div>
+
+                <!-- Personal Information Tab -->
+                <div class="tab-content active" id="personal-tab">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Personal Information</h3>
+                            <p class="card-description">Update your personal details</p>
+                        </div>
+                        <div class="card-content">
+                            <form id="personalInfoForm" class="settings-form">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="firstName">First Name *</label>
+                                        <input 
+                                            type="text" 
+                                            id="firstName" 
+                                            name="firstName" 
+                                            placeholder="Juan"
+                                            value="Juan"
+                                            required
+                                        >
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="lastName">Last Name *</label>
+                                        <input 
+                                            type="text" 
+                                            id="lastName" 
+                                            name="lastName" 
+                                            placeholder="Dela Cruz"
+                                            value="Dela Cruz"
+                                            required
+                                        >
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="email">Email Address *</label>
+                                    <input 
+                                        type="email" 
+                                        id="email" 
+                                        name="email" 
+                                        placeholder="your.email@example.com"
+                                        value="juan.delacruz@example.com"
+                                        required
+                                    >
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="phone">Phone Number</label>
+                                    <input 
+                                        type="tel" 
+                                        id="phone" 
+                                        name="phone" 
+                                        placeholder="+63 912 345 6789"
+                                        value="+63 912 345 6789"
+                                    >
+                                    <p class="field-hint">Required for SMS notifications</p>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary">
+                                    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                                        <polyline points="7 3 7 8 15 8"></polyline>
+                                    </svg>
+                                    Save Changes
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Address Tab -->
+                <div class="tab-content" id="address-tab">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Address Information</h3>
+                            <p class="card-description">Update your complete address</p>
+                        </div>
+                        <div class="card-content">
+                            <form id="addressForm" class="settings-form">
+                                <div class="form-group">
+                                    <label for="region">Region *</label>
+                                    <select id="region" name="region" required>
+                                        <option value="">Select region</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="province">Province *</label>
+                                    <select id="province" name="province" required disabled>
+                                        <option value="">Select province</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="city">City/Municipality *</label>
+                                    <select id="city" name="city" required disabled>
+                                        <option value="">Select city/municipality</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="barangay">Barangay *</label>
+                                    <select id="barangay" name="barangay" required disabled>
+                                        <option value="">Select barangay</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="street">Street/Road *</label>
+                                    <input 
+                                        type="text" 
+                                        id="street" 
+                                        name="street" 
+                                        placeholder="e.g., Rizal Street"
+                                        value="Rizal Street"
+                                        required
+                                    >
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="houseNumber">House/Building No.</label>
+                                        <input 
+                                            type="text" 
+                                            id="houseNumber" 
+                                            name="houseNumber" 
+                                            placeholder="e.g., 123"
+                                            value="123"
+                                        >
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="zipCode">ZIP Code</label>
+                                        <input 
+                                            type="text" 
+                                            id="zipCode" 
+                                            name="zipCode" 
+                                            placeholder="e.g., 1106"
+                                            value="1106"
+                                            maxlength="4"
+                                            pattern="[0-9]{4}"
+                                        >
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary">
+                                    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                                        <polyline points="7 3 7 8 15 8"></polyline>
+                                    </svg>
+                                    Save Changes
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Password Tab -->
+                <div class="tab-content" id="password-tab">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Change Password</h3>
+                            <p class="card-description">Update your account password</p>
+                        </div>
+                        <div class="card-content">
+                            <form id="passwordForm" class="settings-form">
+                                <div class="form-group">
+                                    <label for="currentPassword">Current Password *</label>
+                                    <div class="input-wrapper">
+                                        <input 
+                                            type="password" 
+                                            id="currentPassword" 
+                                            name="currentPassword" 
+                                            placeholder="Enter your current password"
+                                            required
+                                        >
+                                        <button type="button" class="password-toggle" onclick="togglePassword('currentPassword', 'eyeIcon1')">
+                                            <svg id="eyeIcon1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                <circle cx="12" cy="12" r="3"></circle>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="newPassword">New Password *</label>
+                                    <div class="input-wrapper">
+                                        <input 
+                                            type="password" 
+                                            id="newPassword" 
+                                            name="newPassword" 
+                                            placeholder="At least 6 characters"
+                                            required
+                                        >
+                                        <button type="button" class="password-toggle" onclick="togglePassword('newPassword', 'eyeIcon2')">
+                                            <svg id="eyeIcon2" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                <circle cx="12" cy="12" r="3"></circle>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="confirmPassword">Confirm New Password *</label>
+                                    <div class="input-wrapper">
+                                        <input 
+                                            type="password" 
+                                            id="confirmPassword" 
+                                            name="confirmPassword" 
+                                            placeholder="Re-enter your new password"
+                                            required
+                                        >
+                                        <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword', 'eyeIcon3')">
+                                            <svg id="eyeIcon3" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                <circle cx="12" cy="12" r="3"></circle>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="info-box">
+                                    <h4 class="info-box-title">Password Requirements:</h4>
+                                    <ul class="info-box-list">
+                                        <li>• At least 6 characters long</li>
+                                        <li>• Should be unique and not easily guessable</li>
+                                        <li>• Consider using a mix of letters, numbers, and symbols</li>
+                                    </ul>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary">
+                                    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                                        <polyline points="7 3 7 8 15 8"></polyline>
+                                    </svg>
+                                    Change Password
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- JQuery for Address Selector -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    
+    <!-- Script for Address Selector -->
+    <script src="ph-address-selector.js"></script>
+    
+    <script src="account_settings.js"></script>
+</body>
+</html>

@@ -1,44 +1,43 @@
-// Load tracking number from sessionStorage, localStorage, or generate one
 window.addEventListener('DOMContentLoaded', function() {
-    // First try sessionStorage (from tracking search)
-    let trackingNumber = sessionStorage.getItem('trackingNumber');
+    const trackingSpan = document.getElementById('trackingNumber');
     
-    // If not in sessionStorage, try localStorage (from form submission)
-    if (!trackingNumber) {
-        trackingNumber = localStorage.getItem('trackingNumber');
+    // If PHP already inserted a tracking number, use that
+    if (trackingSpan && trackingSpan.textContent.trim() !== '') {
+        console.log('Using PHP tracking number:', trackingSpan.textContent);
+        return; // ✅ Stop here, don’t overwrite it
     }
-    
-    if (!trackingNumber) {
-        // Generate tracking number if not found
-        trackingNumber = 'ERK-' + Date.now().toString(36).toUpperCase() + 
-                        Math.random().toString(36).substring(2, 5).toUpperCase();
-    }
-    
-    document.getElementById('trackingNumber').textContent = trackingNumber;
-    
-    // Clear sessionStorage after loading (so refreshing doesn't keep the same number)
-    // but keep it if it came from localStorage (form submission)
+
+    // // Otherwise, try sessionStorage or localStorage
+    // let trackingNumber = sessionStorage.getItem('trackingNumber');
+
+    // if (!trackingNumber) {
+    //     trackingNumber = localStorage.getItem('trackingNumber');
+    // }
+
+    // if (!trackingNumber) {
+    //     // ✅ Generate a purely numeric tracking number based on timestamp
+    //     const timestamp = Date.now(); // e.g. 1739923846231
+    //     trackingNumber = 'ERK-' + timestamp;
+    // }
+
+    // trackingSpan.textContent = trackingNumber;
+
+    // Clear sessionStorage (if used)
     if (sessionStorage.getItem('trackingNumber')) {
         sessionStorage.removeItem('trackingNumber');
     }
 });
 
-// Copy tracking number to clipboard
+// ✅ Copy tracking number function remains the same
 function copyTrackingNumber() {
     const trackingNumber = document.getElementById('trackingNumber').textContent;
     const copyIcon = document.getElementById('copyIcon');
     
     navigator.clipboard.writeText(trackingNumber).then(function() {
-        // Change icon to checkmark
-        copyIcon.innerHTML = `
-            <polyline points="20 6 9 17 4 12"></polyline>
-        `;
-        
-        // Show feedback
+        copyIcon.innerHTML = `<polyline points="20 6 9 17 4 12"></polyline>`;
         const copyButton = copyIcon.closest('.copy-button');
         copyButton.style.background = '#10b981';
         
-        // Reset after 2 seconds
         setTimeout(function() {
             copyIcon.innerHTML = `
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -46,7 +45,7 @@ function copyTrackingNumber() {
             `;
             copyButton.style.background = 'var(--primary)';
         }, 2000);
-    }).catch(function(err) {
+    }).catch(function() {
         alert('Failed to copy tracking number');
     });
 }

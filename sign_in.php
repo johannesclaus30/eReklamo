@@ -1,5 +1,5 @@
 <?php
-session_start();
+
 include("connections.php");
 
 // // Redirect logged-in users
@@ -57,8 +57,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             // Redirect based on account type
                 if ($account_type == 1) {
                     if($db_password == $User_Password) {
-                        $_SESSION["User_Email"] = $User_Email;
+   
                         // Optionally store User_ID or other details in session
+                        session_start();
                         $_SESSION["User_ID"] = $user["User_ID"];
 
                         header("Location: Admin/admin_dashboard");
@@ -68,6 +69,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 } else {
                     if (password_verify($User_Password, $db_password)) {
+                    
+                    session_start();
                     $_SESSION["User_Email"] = $User_Email;
                     // Optionally store User_ID or other details in session
                     $_SESSION["User_ID"] = $user["User_ID"];

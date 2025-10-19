@@ -4,9 +4,23 @@ include("connections.php");
 
 if (isset($_SESSION["User_ID"])) {
     $User_ID = $_SESSION["User_ID"];
+    // $get_record = mysqli_query($connections, "SELECT * FROM user WHERE User_ID='$User_ID'");
+    // while($row_edit = mysqli_fetch_assoc($get_record)) {
+    //     $User_Email = $row_edit["User_Email"];
+    // }
+    $stmt = mysqli_prepare($connections, "SELECT User_Email FROM user WHERE User_ID = ?");
+    $stmt->bind_param("i", $User_ID);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row_edit = $result->fetch_assoc();
+    $stmt->close();
+    $User_Email = $row_edit["User_Email"];
+
 
 } else {
     $User_ID = 1; // Guest
+
+    $User_Email = "Guest User";
 }
 
     $target_dir = "post_photos/";
@@ -147,9 +161,7 @@ if (isset($_FILES['photoInput'])) {
         }
     }
 }
-    // ✅ If no upload errors occurred, show success message
-    echo "<script>alert('Complaint submitted successfully!');</script>";
-    echo "<script>window.location.href='add_complaint?notify=Complaint submitted successfully!';</script>";
+    $_SESSION["Complaint_ID"] = $Complaint_ID;
     }
 }
 ?>
@@ -174,10 +186,11 @@ if (isset($_FILES['photoInput'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- JQuery for Address Selector -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
     <title>Submit Complaint - eReklamo</title>
     <link rel="stylesheet" href="add_complaint_design.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 </head>
 <body>
     <!-- Header -->
@@ -188,14 +201,30 @@ if (isset($_FILES['photoInput'])) {
                     <img class="ereklamo-logo" src="logos/eReklamo_White.png" />
                 </div>
                 <div class="header-right">
-                    <span class="user-status" id="userStatus">Guest User</span>
-                    <a href="index" class="btn btn-outline">
-                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <line x1="19" y1="12" x2="5" y2="12"></line>
-                            <polyline points="12 19 5 12 12 5"></polyline>
-                        </svg>
-                        Back
-                    </a>
+                    <span class="user-status" id="userStatus"><?php echo $User_Email; ?></span>
+                    <?php if ($User_Email === "Guest User") {
+                        echo '
+                            <a href="index" class="btn btn-outline">
+                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <line x1="19" y1="12" x2="5" y2="12"></line>
+                                <polyline points="12 19 5 12 12 5"></polyline>
+                            </svg>
+                                Back
+                            </a>
+                        ';
+                    } else {
+                        echo '
+                            <a href="user/user_dashboard" class="btn btn-outline">
+                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <line x1="19" y1="12" x2="5" y2="12"></line>
+                                <polyline points="12 19 5 12 12 5"></polyline>
+                            </svg>
+                                Back
+                            </a>
+                        ';
+                    }                   
+                    ?>
+                    
                 </div>
             </div>
         </div>
@@ -485,7 +514,7 @@ if (isset($_FILES['photoInput'])) {
         </div>
     </main>
 
-    <script src="add_complaint.js"></script>
+    <script src="add_complaint2.js"></script>
 
     <script>
     function setText(nameSel, hiddenId){
@@ -503,6 +532,43 @@ if (isset($_FILES['photoInput'])) {
     <script src="../Admin/js/jQuery.js"></script>
 
 </script>
+
+<!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        <?php if ($_SERVER["REQUEST_METHOD"] == "POST"): ?>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <script>
+                <?php if ($alert == "empty"): ?>
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Please enter a tracking number.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                <?php elseif ($alert == "added"): ?>
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Complaint Submitted! Generating Tracking ID...',
+                    icon: 'success',
+                    showConfirmButton: false,
+                    timer: 1000
+                }).then(() => {
+                    window.location.href = 'tracking_page.php';
+                });
+                <?php elseif ($alert == "notfound"): ?>
+                Swal.fire({
+                    title: 'Not Found!',
+                    text: 'No complaint found with that tracking number.',
+                    icon: 'warning',
+                    confirmButtonText: 'OK'
+                });
+                <?php endif; ?>
+            </script>
+        <?php endif; ?>
+
+        </script>
+
 
 </body>
 </html>

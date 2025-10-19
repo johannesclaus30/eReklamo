@@ -1,5 +1,25 @@
 <?php
 
+session_start();
+include("connections.php");
+
+if(isset($_SESSION["Complaint_ID"])) {
+    $Complaint_ID = $_SESSION["Complaint_ID"];
+  
+    $get_record = mysqli_query($connections,"SELECT * FROM complaint WHERE Complaint_ID = '$Complaint_ID'");
+    while($row_edit = mysqli_fetch_assoc($get_record)) {
+        $Tracking_Number = $row_edit['Complaint_TrackingNumber'];
+    }
+
+} else if(isset($_SESSION["Complaint_TrackingNumber"])) {
+    $Tracking_Number = $_SESSION["Complaint_TrackingNumber"];
+
+} else {
+    // Redirect to home if no tracking number found
+    header("Location: index.php");
+    exit();
+}
+
 
 
 ?>
@@ -12,6 +32,8 @@
     <title>Complaint Submitted - eReklamo</title>
     <link rel="stylesheet" href="tracking_page_design.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 </head>
 <body>
     <!-- Header -->
@@ -50,7 +72,7 @@
                     <div class="tracking-container">
                         <p class="tracking-label">Your Tracking Number</p>
                         <div class="tracking-number-box">
-                            <span class="tracking-number" id="trackingNumber">Loading...</span>
+                            <span class="tracking-number" id="trackingNumber"><?php echo $Tracking_Number; ?></span>
                             <button class="copy-button" onclick="copyTrackingNumber()" title="Copy to clipboard">
                                 <svg id="copyIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -138,14 +160,14 @@
 
                     <!-- Action Buttons -->
                     <div class="action-buttons">
-                        <button class="btn btn-primary" onclick="window.location.href='index.html'">
+                        <button class="btn btn-primary" onclick="window.location.href='add_complaint'">
                             <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                             </svg>
                             Submit Another Complaint
                         </button>
-                        <button class="btn btn-outline" onclick="window.location.href='landing_page.html'">
+                        <button class="btn btn-outline" onclick="window.location.href='index'">
                             <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                                 <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -171,5 +193,40 @@
     </main>
 
     <script src="tracking_page.js"></script>
+
+    <!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<?php if ($_SERVER["REQUEST_METHOD"] == "POST"): ?>
+<script>
+    <?php if ($alert == "empty"): ?>
+    Swal.fire({
+        title: 'Error!',
+        text: 'Please enter a tracking number.',
+        icon: 'error',
+        confirmButtonText: 'OK'
+    });
+    <?php elseif ($alert == "found"): ?>
+    Swal.fire({
+        title: 'Success!',
+        text: 'Complaint found! Redirecting...',
+        icon: 'success',
+        showConfirmButton: false,
+        timer: 1500
+    }).then(() => {
+        window.location.href = 'tracking_page';
+    });
+    <?php elseif ($alert == "notfound"): ?>
+    Swal.fire({
+        title: 'Not Found!',
+        text: 'No complaint found with that tracking number.',
+        icon: 'warning',
+        confirmButtonText: 'OK'
+    });
+    <?php endif; ?>
+</script>
+<?php endif; ?>
+
+
 </body>
 </html>
