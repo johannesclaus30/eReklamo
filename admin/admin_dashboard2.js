@@ -29,12 +29,16 @@ let subcategoryChart = null;
 let notifications = []; // latest complaints (non-archived)
 const NOTIF_READ_KEY = 'ereklamo_notif_read_ids';
 
+// If your media folders are one level up from /admin, keep '../'.
+// If they are in the same folder, set to ''.
+const MEDIA_BASE = '../';
+
 const statusColors = {
   'pending': 'status-pending',
   'in-progress': 'status-in-progress',
   'resolved': 'status-resolved',
   'rejected': 'status-rejected',
-  'archived': 'status-rejected' // reused styling; archived are hidden from main analytics anyway
+  'archived': 'status-rejected'
 };
 
 const normStatus = s => {
@@ -63,14 +67,11 @@ window.addEventListener('DOMContentLoaded', () => {
       initializeCharts();
       populateRegionFilter();
 
-      // Reset dependent selects initially
       resetSelect(document.getElementById('chartProvinceFilter'), 'Provinces', true);
       resetSelect(document.getElementById('chartCityFilter'), 'Cities', true);
       resetSelect(document.getElementById('chartBarangayFilter'), 'Barangays', true);
 
       updateChartWithFilters();
-
-      // Build notifications after complaints load
       rebuildNotifications();
     })
     .catch(err => {
@@ -90,7 +91,7 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('searchInput')?.addEventListener('input', filterComplaints);
   document.getElementById('statusFilter')?.addEventListener('change', filterComplaints);
 
-  // Toggles (also works via inline onclick in HTML)
+  // Toggles
   document.getElementById('toggleSubcategoryBtn')?.addEventListener('click', toggleSubcategoryChart);
   document.getElementById('toggleArchivedBtn')?.addEventListener('click', toggleArchivedSection);
 
@@ -99,9 +100,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const container = document.querySelector('.notification-container');
     const dropdown = document.getElementById('notificationDropdown');
     if (!container || !dropdown) return;
-    if (!container.contains(e.target)) {
-      dropdown.classList.remove('show');
-    }
+    if (!container.contains(e.target)) dropdown.classList.remove('show');
   });
 
   // Expose globals for inline handlers used in HTML
@@ -116,25 +115,23 @@ window.addEventListener('DOMContentLoaded', () => {
     closeDetailsModal,
     clearAllChartFilters,
 
-    // Notifications (inline handlers in your HTML)
+    // Notifications
     toggleNotifications,
     closeNotifications,
-    markAllAsRead
+    markAllAsRead,
+
+    // Lightbox
+    closeLightbox
   });
 });
 
 // ====================== STATS ======================
 function updateStats() {
   const active = complaints.filter(c => c.status !== 'archived');
-  const total = active.length;
-  const pending = active.filter(c => c.status === 'pending').length;
-  const progress = active.filter(c => c.status === 'in-progress').length;
-  const resolved = active.filter(c => c.status === 'resolved').length;
-
-  document.getElementById('totalCount').textContent = total;
-  document.getElementById('pendingCount').textContent = pending;
-  document.getElementById('progressCount').textContent = progress;
-  document.getElementById('resolvedCount').textContent = resolved;
+  document.getElementById('totalCount').textContent = active.length;
+  document.getElementById('pendingCount').textContent = active.filter(c => c.status === 'pending').length;
+  document.getElementById('progressCount').textContent = active.filter(c => c.status === 'in-progress').length;
+  document.getElementById('resolvedCount').textContent = active.filter(c => c.status === 'resolved').length;
 }
 
 // ====================== TABLES ======================
@@ -145,7 +142,7 @@ function renderComplaints(data, bodyId = 'complaintsTableBody', emptyId = 'empty
 
   if (!data || data.length === 0) {
     tbody.innerHTML = '';
-    if (emptyState) emptyState.style.display = 'table-row-group'; // correct for tbody
+    if (emptyState) emptyState.style.display = 'table-row-group';
     return;
   }
   if (emptyState) emptyState.style.display = 'none';
@@ -188,14 +185,13 @@ function renderComplaints(data, bodyId = 'complaintsTableBody', emptyId = 'empty
 
 function renderMainAndArchivedTables() {
   const archived = complaints.filter(c => c.status === 'archived');
-  filterComplaints(); // main (active only)
+  filterComplaints(); // main active only
   renderComplaints(archived, 'archivedTableBody', 'archivedEmptyState', true);
 }
 
 function filterComplaints() {
   const term = (document.getElementById('searchInput')?.value || '').toLowerCase();
   const status = document.getElementById('statusFilter')?.value || 'all';
-
   const active = complaints.filter(c => c.status !== 'archived');
 
   const filtered = active.filter(c =>
@@ -227,7 +223,7 @@ async function handleStatusChange(id, status) {
   updateStats();
   updateChartWithFilters();
   renderMainAndArchivedTables();
-  rebuildNotifications(); // keep notifications in sync
+  rebuildNotifications();
 
   try {
     await saveComplaintStatus(id, status);
@@ -248,7 +244,7 @@ async function archiveComplaint(id) {
 }
 
 async function unarchiveComplaint(id) {
-  await handleStatusChange(id, 'pending'); // restore default; adjust if needed
+  await handleStatusChange(id, 'pending');
 }
 
 async function saveComplaintStatus(id, status) {
@@ -258,16 +254,109 @@ async function saveComplaintStatus(id, status) {
     body: JSON.stringify({ id, status })
   });
   const data = await res.json().catch(() => ({}));
-  if (!res.ok || !data.success) {
-    throw new Error(data.error || 'Request failed');
+  if (!res.ok || !data.success) throw new Error(data.error || 'Request failed');
+}
+
+// ====================== MODAL + MEDIA ======================
+function clearModalMedia() {
+  const container = document.getElementById('modalMediaContainer');
+  const empty = document.getElementById('modalMediaEmpty');
+  if (container) container.innerHTML = '';
+  if (empty) empty.style.display = 'block';
+}
+
+async function loadComplaintMedia(complaintId) {
+  const container = document.getElementById('modalMediaContainer');
+  const empty = document.getElementById('modalMediaEmpty');
+  if (!container) return;
+
+  // Reset
+  container.innerHTML = '';
+  if (empty) empty.style.display = 'none';
+
+  try {
+    const res = await fetch(`get_complaint_media.php?complaint_id=${encodeURIComponent(complaintId)}`, { headers: { 'Accept': 'application/json' } });
+    const data = await res.json().catch(() => null);
+    if (!data || !data.success) throw new Error(data?.error || 'Failed to load media');
+
+    if (data.type === 'video' && data.url) {
+      const v = document.createElement('video');
+      v.controls = true;
+      v.src = MEDIA_BASE + data.url;
+      v.style.width = '100%';
+      v.style.maxHeight = '320px';
+      v.style.borderRadius = '8px';
+      v.addEventListener('click', () => openLightboxVideo(v.src));
+      container.appendChild(v);
+    } else if (data.type === 'images' && Array.isArray(data.urls) && data.urls.length) {
+      const grid = document.createElement('div');
+      grid.style.display = 'grid';
+      grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(120px, 1fr))';
+      grid.style.gap = '8px';
+
+      data.urls.forEach(u => {
+        const img = document.createElement('img');
+        img.src = MEDIA_BASE + u;
+        img.alt = 'Attachment';
+        img.style.width = '100%';
+        img.style.height = '120px';
+        img.style.objectFit = 'cover';
+        img.style.borderRadius = '8px';
+        img.style.cursor = 'pointer';
+        img.addEventListener('click', () => openLightboxImage(img.src));
+        grid.appendChild(img);
+      });
+
+      container.appendChild(grid);
+    } else {
+      if (empty) empty.style.display = 'block';
+    }
+  } catch (e) {
+    console.error(e);
+    if (empty) {
+      empty.textContent = 'Failed to load attachments.';
+      empty.style.display = 'block';
+    }
   }
 }
 
-// ====================== MODAL ======================
+function openLightboxImage(src) {
+  const lb = document.getElementById('mediaLightbox');
+  const img = document.getElementById('lightboxImage');
+  const vid = document.getElementById('lightboxVideo');
+  if (!lb || !img || !vid) return;
+  vid.style.display = 'none';
+  vid.pause?.();
+  img.src = src;
+  img.style.display = 'block';
+  lb.style.display = 'flex';
+}
+
+function openLightboxVideo(src) {
+  const lb = document.getElementById('mediaLightbox');
+  const img = document.getElementById('lightboxImage');
+  const vid = document.getElementById('lightboxVideo');
+  if (!lb || !img || !vid) return;
+  img.style.display = 'none';
+  vid.src = src;
+  vid.style.display = 'block';
+  lb.style.display = 'flex';
+}
+
+function closeLightbox() {
+  const lb = document.getElementById('mediaLightbox');
+  const img = document.getElementById('lightboxImage');
+  const vid = document.getElementById('lightboxVideo');
+  if (vid) { vid.pause?.(); vid.src = ''; }
+  if (img) { img.src = ''; }
+  if (lb) lb.style.display = 'none';
+}
+
 function viewComplaintDetails(id) {
   const c = complaints.find(x => x.id == id);
   if (!c) return;
   selectedComplaint = c;
+
   document.getElementById('modalTrackingNumber').textContent = c.trackingNumber || '';
   document.getElementById('modalCategory').textContent = c.category || '';
   document.getElementById('modalSubcategory').textContent = c.subcategory || '—';
@@ -275,15 +364,25 @@ function viewComplaintDetails(id) {
   document.getElementById('modalLocation').textContent = c.location || '';
   document.getElementById('modalSubmittedBy').textContent = c.submittedBy || '';
   document.getElementById('modalDateSubmitted').textContent = formatDate(c.dateSubmitted);
+
   const s = document.getElementById('modalStatusSelect');
-  s.value = c.status;
-  s.className = `status-select ${statusColors[c.status] || ''}`;
+  if (s) {
+    s.value = c.status;
+    s.className = `status-select ${statusColors[c.status] || ''}`;
+  }
+
+  // Load media
+  clearModalMedia();
+  loadComplaintMedia(c.id);
+
   document.getElementById('detailsModal').style.display = 'flex';
 }
 
 function closeDetailsModal() {
   document.getElementById('detailsModal').style.display = 'none';
   selectedComplaint = null;
+  clearModalMedia();
+  closeLightbox();
 }
 
 // ====================== CHARTS ======================
@@ -316,18 +415,16 @@ function updateCharts(data) {
   });
 
   const catLabels = Object.keys(catCounts);
-  const catVals = Object.values(catCounts);
   const subLabels = Object.keys(subCounts);
-  const subVals = Object.values(subCounts);
 
   complaintChart.data.labels = catLabels;
-  complaintChart.data.datasets[0].data = catVals;
+  complaintChart.data.datasets[0].data = catLabels.map(l => catCounts[l]);
   complaintChart.data.datasets[0].backgroundColor = catLabels.map(getCategoryColor);
   complaintChart.data.datasets[0].borderColor = catLabels.map(getCategoryBorder);
   complaintChart.update();
 
   subcategoryChart.data.labels = subLabels;
-  subcategoryChart.data.datasets[0].data = subVals;
+  subcategoryChart.data.datasets[0].data = subLabels.map(l => subCounts[l]);
   subcategoryChart.data.datasets[0].backgroundColor = subLabels.map(l => getCategoryColor(l.split(' - ')[0]));
   subcategoryChart.data.datasets[0].borderColor = subLabels.map(l => getCategoryBorder(l.split(' - ')[0]));
   subcategoryChart.update();
@@ -345,14 +442,11 @@ function toggleSubcategoryChart() {
   }
 
   const willShow = getComputedStyle(section).display === 'none';
-
-  // Toggle panel
   section.style.display = willShow ? 'block' : 'none';
   if (btn) btn.classList.toggle('active', willShow);
   if (label) label.textContent = willShow ? 'Hide Detailed Breakdown' : 'View Detailed Breakdown by Subcategory';
 
   if (willShow) {
-    // Ensure datasets match current filters; then resize after paint
     updateChartWithFilters();
     requestAnimationFrame(() => {
       if (subcategoryChart) { subcategoryChart.resize(); subcategoryChart.update(); }
@@ -365,14 +459,12 @@ function toggleSubcategoryChart() {
 function toggleArchivedSection() {
   const s = document.getElementById('archivedSection');
   if (!s) { showToast('Archived section not found.', 'error'); return; }
-  // Always re-render before toggling (in case status changed)
   renderMainAndArchivedTables();
   s.style.display = (getComputedStyle(s).display === 'none') ? 'block' : 'none';
 }
 
 // ====================== NOTIFICATIONS ======================
 function rebuildNotifications() {
-  // Exclude archived and take the latest 10 complaints by date
   const active = complaints.filter(c => c.status !== 'archived');
   notifications = [...active].sort((a, b) => new Date(b.dateSubmitted) - new Date(a.dateSubmitted)).slice(0, 10);
   renderNotificationList();
@@ -433,27 +525,18 @@ function renderNotificationList() {
   badge.style.display = unreadCount > 0 ? 'inline-flex' : 'none';
 }
 
-// Called by clicking a notification item
 function openNotification(id) {
-  // Mark read
   const read = getReadSet();
   read.add(String(id));
   saveReadSet(read);
-
-  // Update UI
   renderNotificationList();
-
-  // Open details
   viewComplaintDetails(id);
-
-  // Optionally close dropdown
   closeNotifications();
 }
 
 function toggleNotifications() {
   const dropdown = document.getElementById('notificationDropdown');
   if (!dropdown) return;
-  // Rebuild before show
   rebuildNotifications();
   dropdown.classList.toggle('show');
 }

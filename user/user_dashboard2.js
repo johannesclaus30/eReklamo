@@ -28,6 +28,8 @@ async function initUserDashboard() {
     }
 }
 
+const TRACKING_PAGE_URL = '../tracking_page';
+
 const statusLabels = {
     'pending': 'Pending Review',
     'in-progress': 'In Progress',
@@ -196,7 +198,9 @@ function viewComplaintDetails(trackingNumber) {
     try {
         sessionStorage.setItem('trackingNumber', trackingNumber);
     } catch {}
-    window.location.href = '../tracking_page';
+    // Build target URL. If it’s a folder (ends with /), we can append a query param.
+    const url = TRACKING_PAGE_URL + (TRACKING_PAGE_URL.endsWith('/') ? `?tn=${encodeURIComponent(trackingNumber)}` : `?tn=${encodeURIComponent(trackingNumber)}`);
+    window.location.href = url;
 }
 
 function formatDate(dateString) {

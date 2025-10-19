@@ -3,10 +3,10 @@ session_start();
 include("../connections.php");
 
 // // Optional: check if admin is logged in
-// if (!isset($_SESSION['Admin_ID'])) {
-//     header("Location: login.php");
-//     exit;
-// }
+if (!isset($_SESSION['User_ID'])) {
+    header("Location: ../sign_in");
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -327,56 +327,23 @@ include("../connections.php");
                     </div>
                 </div>
 
+                <!-- Attachments -->
                 <div class="modal-field">
-                    <label>Current Status</label>
-                    <select 
-                        id="modalStatusSelect" 
-                        class="status-select"
-                        onchange="handleModalStatusChange(this.value)"
-                    >
-                        <option value="pending">Pending</option>
-                        <option value="in-progress">In Progress</option>
-                        <option value="resolved">Resolved</option>
-                        <option value="rejected">Rejected</option>
-                    </select>
-                </div>
-
-                <div id="modalDeleteSection" class="modal-delete-section">
-                    <button class="btn btn-delete" onclick="confirmDelete(selectedComplaint?.id)">
-                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <polyline points="3 6 5 6 21 6"></polyline>
-                            <path d="m19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                        </svg>
-                        Delete Resolved Complaint
-                    </button>
-                    <p class="delete-hint">Delete this complaint to free up storage space</p>
+                    <label>Attachments</label>
+                    <div id="modalMediaContainer" class="media-container">
+                        <p id="modalMediaEmpty" class="media-empty">No media attached.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
-    <div id="deleteConfirmModal" class="modal">
-        <div class="modal-content modal-small">
-            <div class="modal-header">
-                <h3>Delete Resolved Complaint?</h3>
-                <button class="modal-close" onclick="closeDeleteModal()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p>Are you sure you want to delete complaint <strong id="deleteTrackingNumber"></strong>?</p>
-                <p class="warning-text">This action cannot be undone and will permanently remove this complaint from the system.</p>
-                
-                <div class="modal-actions">
-                    <button class="btn btn-outline" onclick="closeDeleteModal()">Cancel</button>
-                    <button class="btn btn-delete" onclick="executeDelete()">
-                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <polyline points="3 6 5 6 21 6"></polyline>
-                            <path d="m19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                        </svg>
-                        Delete Complaint
-                    </button>
-                </div>
-            </div>
+    <!-- Simple Lightbox for media -->
+    <div id="mediaLightbox" class="media-lightbox" style="display:none;">
+        <div class="media-lightbox-content">
+            <button class="media-lightbox-close" onclick="closeLightbox()">&times;</button>
+            <img id="lightboxImage" alt="" style="display:none;max-width:100%;max-height:80vh;border-radius:8px;" />
+            <video id="lightboxVideo" controls style="display:none;width:100%;max-height:80vh;border-radius:8px;"></video>
         </div>
     </div>
 
