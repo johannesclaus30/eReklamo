@@ -1,8 +1,12 @@
 <?php
+session_start();
+include("../connections.php");
 
-
-
-
+// // Optional: check if admin is logged in
+// if (!isset($_SESSION['Admin_ID'])) {
+//     header("Location: login.php");
+//     exit;
+// }
 ?>
 
 <!DOCTYPE html>
@@ -20,15 +24,8 @@
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="12" y1="8" x2="12" y2="12"></line>
-                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                    </svg>
-                    <div>
-                        <h1 class="logo-text">eReklamo Admin</h1>
-                        <p class="logo-subtitle">Complaint Management Dashboard</p>
-                    </div>
+                    <img class="ereklamo-logo" src="../logos/eReklamo_White.png" />
+                    <p>Admin Complaint Management Dashboard</p>
                 </div>
                 <div class="header-actions">
                     <div class="notification-container">
@@ -54,7 +51,7 @@
                             </div>
                         </div>
                     </div>
-                    <button class="btn btn-outline-white" onclick="window.location.href='sign_in.html'">
+                    <button class="btn btn-outline-white" onclick="window.location.href='../sign_in'">
                         <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                             <polyline points="16 17 21 12 16 7"></polyline>
@@ -80,19 +77,19 @@
             <div class="stats-grid">
                 <div class="stat-card stat-total">
                     <div class="stat-label">Total Complaints</div>
-                    <div class="stat-value" id="totalCount">6</div>
+                    <div class="stat-value" id="totalCount"></div>
                 </div>
                 <div class="stat-card stat-pending">
                     <div class="stat-label">Pending Review</div>
-                    <div class="stat-value" id="pendingCount">2</div>
+                    <div class="stat-value" id="pendingCount"></div>
                 </div>
                 <div class="stat-card stat-progress">
                     <div class="stat-label">In Progress</div>
-                    <div class="stat-value" id="progressCount">1</div>
+                    <div class="stat-value" id="progressCount"></div>
                 </div>
                 <div class="stat-card stat-resolved">
                     <div class="stat-label">Resolved</div>
-                    <div class="stat-value" id="resolvedCount">2</div>
+                    <div class="stat-value" id="resolvedCount"></div>
                 </div>
             </div>
 
@@ -145,10 +142,10 @@
                                 <option value="all">All Barangays</option>
                             </select>
                         </div>
-                        
+
                         <div class="chart-filter-group">
                             <label class="chart-filter-label" style="opacity: 0; pointer-events: none;">Actions</label>
-                            <button id="clearChartFiltersBtn" class="btn-clear-chart-filters" onclick="clearChartFilters()">
+                            <button id="clearChartFilters" class="btn-clear-chart-filters" onclick="clearAllChartFilters()">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <line x1="18" y1="6" x2="6" y2="18"></line>
                                     <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -163,11 +160,11 @@
                     </div>
                     
                     <div class="chart-toggle-section">
-                        <button id="toggleSubcategoryBtn" class="btn-toggle-subcategory" onclick="toggleSubcategoryChart()">
+                        <button id="toggleSubcategoryBtn" class="btn-toggle-subcategory">
                             <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="6 9 12 15 18 9"></polyline>
                             </svg>
-                            View Detailed Breakdown by Subcategory
+                            <span class="toggle-label">View Detailed Breakdown by Subcategory</span>
                         </button>
                     </div>
                     
@@ -220,9 +217,7 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="complaintsTableBody">
-                        <!-- Rows will be inserted by JavaScript -->
-                    </tbody>
+                    <tbody id="complaintsTableBody"></tbody>
                     <tbody id="emptyState" style="display: none;">
                         <tr>
                             <td colspan="7" class="empty-state">
@@ -236,6 +231,51 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- Archived Complaints -->
+            <div class="chart-section" style="margin-top: 24px;">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div>
+                            <h3>Archived Complaints</h3>
+                            <p class="chart-subtitle">Archived items are hidden from the main table, stats, and charts</p>
+                        </div>
+                        <button id="toggleArchivedBtn" class="btn btn-outline" >
+                            Show/Hide
+                        </button>
+                    </div>
+                    <div id="archivedSection" style="display: none;">
+                        <div class="table-container">
+                            <table class="complaints-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tracking #</th>
+                                        <th>Category</th>
+                                        <th>Description</th>
+                                        <th>Location</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="archivedTableBody"></tbody>
+                                <tbody id="archivedEmptyState" style="display: none;">
+                                    <tr>
+                                        <td colspan="7" class="empty-state">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                                <polyline points="14 2 14 8 20 8"></polyline>
+                                            </svg>
+                                            <p>No archived complaints.</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </main>
 
@@ -302,7 +342,7 @@
                 </div>
 
                 <div id="modalDeleteSection" class="modal-delete-section">
-                    <button class="btn btn-delete" onclick="confirmDelete(selectedComplaint.id)">
+                    <button class="btn btn-delete" onclick="confirmDelete(selectedComplaint?.id)">
                         <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <polyline points="3 6 5 6 21 6"></polyline>
                             <path d="m19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -341,6 +381,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script src="admin_dashboard.js"></script>
+    <script src="admin_dashboard2.js"></script>
 </body>
 </html>

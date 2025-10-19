@@ -25,6 +25,10 @@ let selectedComplaint = null;
 let complaintChart = null;
 let subcategoryChart = null;
 
+// Notifications state
+let notifications = []; // latest complaints (non-archived)
+const NOTIF_READ_KEY = 'ereklamo_notif_read_ids';
+
 const statusColors = {
   'pending': 'status-pending',
   'in-progress': 'status-in-progress',
@@ -65,6 +69,9 @@ window.addEventListener('DOMContentLoaded', () => {
       resetSelect(document.getElementById('chartBarangayFilter'), 'Barangays', true);
 
       updateChartWithFilters();
+
+      // Build notifications after complaints load
+      rebuildNotifications();
     })
     .catch(err => {
       console.error('Error:', err);
@@ -87,7 +94,17 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('toggleSubcategoryBtn')?.addEventListener('click', toggleSubcategoryChart);
   document.getElementById('toggleArchivedBtn')?.addEventListener('click', toggleArchivedSection);
 
-  // Expose globals for inline handlers
+  // Close notifications when clicking outside
+  document.addEventListener('click', (e) => {
+    const container = document.querySelector('.notification-container');
+    const dropdown = document.getElementById('notificationDropdown');
+    if (!container || !dropdown) return;
+    if (!container.contains(e.target)) {
+      dropdown.classList.remove('show');
+    }
+  });
+
+  // Expose globals for inline handlers used in HTML
   Object.assign(window, {
     toggleSubcategoryChart,
     toggleArchivedSection,
@@ -97,7 +114,12 @@ window.addEventListener('DOMContentLoaded', () => {
     unarchiveComplaint,
     viewComplaintDetails,
     closeDetailsModal,
-    clearAllChartFilters
+    clearAllChartFilters,
+
+    // Notifications (inline handlers in your HTML)
+    toggleNotifications,
+    closeNotifications,
+    markAllAsRead
   });
 });
 
@@ -123,7 +145,7 @@ function renderComplaints(data, bodyId = 'complaintsTableBody', emptyId = 'empty
 
   if (!data || data.length === 0) {
     tbody.innerHTML = '';
-    if (emptyState) emptyState.style.display = 'table-row-group'; // tbody display
+    if (emptyState) emptyState.style.display = 'table-row-group'; // correct for tbody
     return;
   }
   if (emptyState) emptyState.style.display = 'none';
@@ -205,6 +227,7 @@ async function handleStatusChange(id, status) {
   updateStats();
   updateChartWithFilters();
   renderMainAndArchivedTables();
+  rebuildNotifications(); // keep notifications in sync
 
   try {
     await saveComplaintStatus(id, status);
@@ -225,7 +248,7 @@ async function archiveComplaint(id) {
 }
 
 async function unarchiveComplaint(id) {
-  await handleStatusChange(id, 'pending'); // restore to pending; adjust if needed
+  await handleStatusChange(id, 'pending'); // restore default; adjust if needed
 }
 
 async function saveComplaintStatus(id, status) {
@@ -310,7 +333,7 @@ function updateCharts(data) {
   subcategoryChart.update();
 }
 
-// ====================== TOGGLES ======================
+// ====================== SUBCATEGORY TOGGLE ======================
 function toggleSubcategoryChart() {
   const section = document.getElementById('subcategoryChartSection');
   const btn = document.getElementById('toggleSubcategoryBtn');
@@ -338,12 +361,113 @@ function toggleSubcategoryChart() {
   }
 }
 
+// ====================== ARCHIVED SECTION TOGGLE ======================
 function toggleArchivedSection() {
   const s = document.getElementById('archivedSection');
   if (!s) { showToast('Archived section not found.', 'error'); return; }
   // Always re-render before toggling (in case status changed)
   renderMainAndArchivedTables();
   s.style.display = (getComputedStyle(s).display === 'none') ? 'block' : 'none';
+}
+
+// ====================== NOTIFICATIONS ======================
+function rebuildNotifications() {
+  // Exclude archived and take the latest 10 complaints by date
+  const active = complaints.filter(c => c.status !== 'archived');
+  notifications = [...active].sort((a, b) => new Date(b.dateSubmitted) - new Date(a.dateSubmitted)).slice(0, 10);
+  renderNotificationList();
+}
+
+function getReadSet() {
+  try {
+    const arr = JSON.parse(localStorage.getItem(NOTIF_READ_KEY) || '[]');
+    return new Set(arr.map(String));
+  } catch {
+    return new Set();
+  }
+}
+
+function saveReadSet(set) {
+  const arr = Array.from(set);
+  localStorage.setItem(NOTIF_READ_KEY, JSON.stringify(arr));
+}
+
+function renderNotificationList() {
+  const list = document.getElementById('notificationList');
+  const badge = document.getElementById('notificationBadge');
+  if (!list || !badge) return;
+
+  const read = getReadSet();
+  const itemsHtml = notifications.map(n => {
+    const isUnread = !read.has(String(n.id));
+    const title = `${escapeHtml(n.category || 'Complaint')}${n.subcategory ? ' • ' + escapeHtml(n.subcategory) : ''}`;
+    const desc = escapeHtml(n.description || '');
+    const loc = escapeHtml(n.location || '');
+    const time = timeAgo(n.dateSubmitted);
+    const status = escapeHtml(n.status || '');
+
+    return `
+      <div class="notification-item ${isUnread ? 'unread' : ''}" data-id="${n.id}" onclick="openNotification(${n.id})">
+        <div class="notification-content">
+          <div class="notification-title">
+            <span class="notification-dot"></span>${title}
+          </div>
+          <div class="notification-desc">${desc}</div>
+          <div class="notification-meta">
+            <div class="notification-location">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="10" r="3"></circle><path d="M12 2a8 8 0 0 0-8 8c0 7 8 12 8 12s8-5 8-12a8 8 0 0 0-8-8z"/></svg>
+              ${loc}
+            </div>
+            <span class="notification-time">${time}</span>
+            <span class="notification-status">${status}</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  list.innerHTML = itemsHtml;
+
+  const unreadCount = notifications.reduce((acc, n) => acc + (getReadSet().has(String(n.id)) ? 0 : 1), 0);
+  badge.textContent = unreadCount > 99 ? '99+' : String(unreadCount);
+  badge.style.display = unreadCount > 0 ? 'inline-flex' : 'none';
+}
+
+// Called by clicking a notification item
+function openNotification(id) {
+  // Mark read
+  const read = getReadSet();
+  read.add(String(id));
+  saveReadSet(read);
+
+  // Update UI
+  renderNotificationList();
+
+  // Open details
+  viewComplaintDetails(id);
+
+  // Optionally close dropdown
+  closeNotifications();
+}
+
+function toggleNotifications() {
+  const dropdown = document.getElementById('notificationDropdown');
+  if (!dropdown) return;
+  // Rebuild before show
+  rebuildNotifications();
+  dropdown.classList.toggle('show');
+}
+
+function closeNotifications() {
+  const dropdown = document.getElementById('notificationDropdown');
+  dropdown?.classList.remove('show');
+}
+
+function markAllAsRead() {
+  const read = getReadSet();
+  notifications.forEach(n => read.add(String(n.id)));
+  saveReadSet(read);
+  renderNotificationList();
 }
 
 // ====================== FILTER HELPERS ======================
@@ -473,4 +597,21 @@ function showToast(msg, type='info') {
 
 function escapeHtml(str) {
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+
+function timeAgo(dateStr) {
+  const d = new Date(dateStr);
+  const now = new Date();
+  const sec = Math.floor((now - d) / 1000);
+  if (sec < 60) return `${sec}s ago`;
+  const min = Math.floor(sec / 60);
+  if (min < 60) return `${min}m ago`;
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return `${hr}h ago`;
+  const day = Math.floor(hr / 24);
+  if (day < 30) return `${day}d ago`;
+  const mon = Math.floor(day / 30);
+  if (mon < 12) return `${mon}mo ago`;
+  const yr = Math.floor(mon / 12);
+  return `${yr}y ago`;
 }

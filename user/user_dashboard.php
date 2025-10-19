@@ -11,7 +11,6 @@ $User_ID = $_SESSION["User_ID"];
 $User_Email = $_SESSION["User_Email"];
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -30,7 +29,7 @@ $User_Email = $_SESSION["User_Email"];
                     <img class="ereklamo-logo" src="../logos/eReklamo_White.png" />
                 </div>
                 <nav class="nav">
-                    <span class="user-email" id="userEmail"><?php echo $User_Email; ?></span>
+                    <span class="user-email" id="userEmail"><?php echo htmlspecialchars($User_Email, ENT_QUOTES, 'UTF-8'); ?></span>
                     <a href="../account_settings" class="settings-btn">Settings</a>
                     <a href="../signout" class="btn btn-outline-white">Sign Out</a>
                 </nav>
@@ -111,12 +110,5 @@ $User_Email = $_SESSION["User_Email"];
     </main>
 
     <script src="user_dashboard2.js"></script>
-    <script>
-        // Convert PHP array to JavaScript
-        const complaints = <?php echo json_encode($complaints); ?>;
-    </script>
-
-
-
 </body>
 </html>

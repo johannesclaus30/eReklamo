@@ -24,15 +24,8 @@ include("../connections.php");
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="12" y1="8" x2="12" y2="12"></line>
-                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                    </svg>
-                    <div>
-                        <h1 class="logo-text">eReklamo Admin</h1>
-                        <p class="logo-subtitle">Complaint Management Dashboard</p>
-                    </div>
+                    <img class="ereklamo-logo" src="../logos/eReklamo_White.png" />
+                    <p>Admin Complaint Management Dashboard</p>
                 </div>
                 <div class="header-actions">
                     <div class="notification-container">
@@ -167,7 +160,7 @@ include("../connections.php");
                     </div>
                     
                     <div class="chart-toggle-section">
-                        <button id="toggleSubcategoryBtn" class="btn-toggle-subcategory" onclick="toggleSubcategoryChart()">
+                        <button id="toggleSubcategoryBtn" class="btn-toggle-subcategory">
                             <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="6 9 12 15 18 9"></polyline>
                             </svg>
@@ -247,7 +240,7 @@ include("../connections.php");
                             <h3>Archived Complaints</h3>
                             <p class="chart-subtitle">Archived items are hidden from the main table, stats, and charts</p>
                         </div>
-                        <button id="toggleArchivedBtn" class="btn btn-outline" onclick="toggleArchivedSection()">
+                        <button id="toggleArchivedBtn" class="btn btn-outline" >
                             Show/Hide
                         </button>
                     </div>

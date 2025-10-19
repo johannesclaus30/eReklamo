@@ -82,9 +82,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['form_type']) && $_POS
         mysqli_stmt_bind_param($stmt, "ssssi", $User_FirstName, $User_LastName, $User_Email, $User_PhoneNumber, $User_ID);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
-        echo "<script>alert('Personal information updated successfully!');</script>";
+        //echo "<script>alert('Personal information updated successfully!');</script>";
+        $alert = "submitAlert";
     } else {
-        echo "<script>alert('Please correct the errors in the form.');</script>";
+        //echo "<script>alert('Please correct the errors in the form.');</script>";
+        $alert = "errorAlert";
     }
 } else {
     echo "<script>console.log('Form type: " . ($_POST['form_type'] ?? 'none') . "');</script>";
@@ -111,7 +113,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['form_type']) && $_POS
         mysqli_stmt_bind_param($stmt, "sssssssi", $User_Region_Name, $User_Province_Name, $User_City_Name, $User_Barangay_Name, $User_Street, $User_HouseNo, $User_ZIP, $User_ID);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
-        echo "<script>alert('Address updated successfully!');</script>";
+        //echo "<script>alert('Address updated successfully!');</script>";
+        $alert = "submitAlert";
     }
 }
 
@@ -130,7 +133,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['form_type']) && $_POS
     $confirmPassword = $_POST["confirmPassword"] ?? '';
 
     if (empty($currentPassword) || !password_verify($currentPassword, $row['User_Password'])) {
-        echo "<script>alert('Incorrect or missing current password. Please try again.');</script>";
+        //echo "<script>alert('Incorrect or missing current password. Please try again.');</script>";
+        $alert = "errorAlert";
     }
 
     if ($newPassword === '') { $New_PasswordErr = "New password is required"; }
@@ -154,7 +158,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['form_type']) && $_POS
             mysqli_stmt_bind_param($stmt, "si", $hash, $User_ID);
             mysqli_stmt_execute($stmt);
             mysqli_stmt_close($stmt);
-            echo "<script>alert('Password changed successfully!');</script>";
+            #echo "<script>alert('Password changed successfully!');</script>";
+            $alert = "passAlert";
         } else {
             $Current_PasswordErr = "Incorrect current password";
         }
@@ -168,7 +173,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['form_type']) && $_POS
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Account Settings - eReklamo</title>
-    <link rel="stylesheet" href="account_settings.css">
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="account_settings2.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -176,13 +183,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['form_type']) && $_POS
     <header class="header">
         <div class="container">
             <div class="header-content">
-                <div class="logo">
-                    <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="12" y1="8" x2="12" y2="12"></line>
-                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                    </svg>
-                    <h1 class="logo-text">eReklamo</h1>
+                <div class="logo"> 
+                    <img class="ereklamo-logo" src="logos/eReklamo_White.png" />
                 </div>
                 <a href="user/user_dashboard" class="btn btn-outline">
                     <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -324,7 +326,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['form_type']) && $_POS
                             <div class="current-address-box">
                                 <strong>
                                 <?php
-                                    echo htmlspecialchars("$User_HouseNo, $User_Street, $User_Barangay_Name, $User_City_Name, $User_Province_Name, $User_Region_Name, Philippines");
+                                    echo htmlspecialchars("$User_Street, $User_Barangay_Name, $User_City_Name, $User_Province_Name, $User_Region_Name, Philippines");
                                 ?>
                                 </strong>
                             </div>
@@ -522,5 +524,47 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['form_type']) && $_POS
     </script>
 
     <script src="account_settings.js"></script>
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        <?php if ($_SERVER["REQUEST_METHOD"] == "POST"): ?>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <script>
+                <?php if ($alert == "errorAlert"): ?>
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Process timeout. Please try again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                <?php elseif ($alert == "passAlert"): ?>
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Incorrect or missing current password. Please try again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                <?php elseif ($alert == "submitAlert"): ?>
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Details Updated Successfully.',
+                    icon: 'success',
+                    showConfirmButton: false,
+                    timer: 1000
+                });
+                <?php elseif ($alert == "infoAlert"): ?>
+                Swal.fire({
+                    title: 'Warning!',
+                    text: 'Please fill in all required fields.',
+                    icon: 'warning',
+                    confirmButtonText: 'OK'
+                });
+                <?php endif; ?>
+            </script>
+        <?php endif; ?>
+
+        </script>
+
 </body>
 </html>

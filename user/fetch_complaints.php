@@ -2,13 +2,17 @@
 session_start();
 include("../connections.php");
 
+header('Content-Type: application/json; charset=utf-8');
+
 if (!isset($_SESSION["User_ID"])) {
+    http_response_code(401);
     echo json_encode(["error" => "Unauthorized"]);
     exit();
 }
 
 $User_ID = $_SESSION["User_ID"];
 
+// Pending_Date was removed. Use only existing columns for lastUpdated.
 $query = "
     SELECT 
         c.Complaint_ID AS id,
@@ -18,7 +22,7 @@ $query = "
         c.Complaint_Description AS description,
         c.Complaint_Status AS status,
         c.Created_At AS dateSubmitted,
-        COALESCE(c.Resolved_Date, c.Progress_Date, c.Pending_Date, c.Created_At) AS lastUpdated,
+        COALESCE(c.Resolved_Date, c.Progress_Date, c.Created_At) AS lastUpdated,
         CONCAT(l.Complaint_Barangay, ', ', l.Complaint_City) AS location
     FROM complaint c
     LEFT JOIN complaint_location l
@@ -28,16 +32,35 @@ $query = "
 ";
 
 $stmt = $connections->prepare($query);
+if (!$stmt) {
+    http_response_code(500);
+    echo json_encode(["error" => "Prepare failed: " . $connections->error]);
+    exit();
+}
+
 $stmt->bind_param("i", $User_ID);
-$stmt->execute();
+
+if (!$stmt->execute()) {
+    http_response_code(500);
+    echo json_encode(["error" => "Execute failed: " . $stmt->error]);
+    $stmt->close();
+    exit();
+}
+
 $result = $stmt->get_result();
+if ($result === false) {
+    http_response_code(500);
+    echo json_encode(["error" => "get_result failed: " . $stmt->error]);
+    $stmt->close();
+    exit();
+}
 
 $complaints = [];
 while ($row = $result->fetch_assoc()) {
-    $row['status'] = strtolower($row['status']);
+    $row['status'] = strtolower($row['status'] ?? '');
     $complaints[] = $row;
 }
 
-header('Content-Type: application/json');
-echo json_encode($complaints);
-?>
+$stmt->close();
+
+echo json_encode($complaints, JSON_UNESCAPED_UNICODE);
