@@ -2,50 +2,50 @@
 const today = new Date();
 const complaints = [
     {
-        id: '1',
-        trackingNumber: 'ERK-2024-001234',
-        category: 'Infrastructure',
-        subcategory: 'Road Damage',
-        description: 'Large pothole on Main Street causing traffic issues',
-        location: 'Barangay 1',
-        status: 'in-progress',
-        dateSubmitted: new Date(today.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 5 days ago
-        lastUpdated: new Date(today.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-    },
-    {
-        id: '2',
-        trackingNumber: 'ERK-2024-001189',
-        category: 'Public Safety',
-        subcategory: 'Street Lighting',
-        description: 'Broken street light near the park',
-        location: 'Barangay 2',
-        status: 'resolved',
-        dateSubmitted: new Date(today.getTime() - 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 15 days ago
-        lastUpdated: new Date(today.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-    },
-    {
-        id: '3',
-        trackingNumber: 'ERK-2024-001298',
-        category: 'Health and Sanitation',
-        subcategory: 'Waste Collection',
-        description: 'Garbage not collected for 3 weeks',
-        location: 'Barangay 3',
-        status: 'pending',
-        dateSubmitted: new Date(today.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 2 days ago
-        lastUpdated: new Date(today.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-    },
-    {
-        id: '4',
-        trackingNumber: 'ERK-2024-001056',
-        category: 'Peace and Order',
-        subcategory: 'Noise Disturbance',
-        description: 'Construction noise at night beyond permitted hours',
-        location: 'Barangay 1',
-        status: 'rejected',
-        dateSubmitted: new Date(today.getTime() - 45 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 45 days ago
-        lastUpdated: new Date(today.getTime() - 40 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-    },
-    {
+    //     id: '1',
+    //     trackingNumber: 'ERK-2024-001234',
+    //     category: 'Infrastructure',
+    //     subcategory: 'Road Damage',
+    //     description: 'Large pothole on Main Street causing traffic issues',
+    //     location: 'Barangay 1',
+    //     status: 'in-progress',
+    //     dateSubmitted: new Date(today.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 5 days ago
+    //     lastUpdated: new Date(today.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+    // },
+    // {
+    //     id: '2',
+    //     trackingNumber: 'ERK-2024-001189',
+    //     category: 'Public Safety',
+    //     subcategory: 'Street Lighting',
+    //     description: 'Broken street light near the park',
+    //     location: 'Barangay 2',
+    //     status: 'resolved',
+    //     dateSubmitted: new Date(today.getTime() - 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 15 days ago
+    //     lastUpdated: new Date(today.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+    // },
+    // {
+    //     id: '3',
+    //     trackingNumber: 'ERK-2024-001298',
+    //     category: 'Health and Sanitation',
+    //     subcategory: 'Waste Collection',
+    //     description: 'Garbage not collected for 3 weeks',
+    //     location: 'Barangay 3',
+    //     status: 'pending',
+    //     dateSubmitted: new Date(today.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 2 days ago
+    //     lastUpdated: new Date(today.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+    // },
+    // {
+    //     id: '4',
+    //     trackingNumber: 'ERK-2024-001056',
+    //     category: 'Peace and Order',
+    //     subcategory: 'Noise Disturbance',
+    //     description: 'Construction noise at night beyond permitted hours',
+    //     location: 'Barangay 1',
+    //     status: 'rejected',
+    //     dateSubmitted: new Date(today.getTime() - 45 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 45 days ago
+    //     lastUpdated: new Date(today.getTime() - 40 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+    // },
+    // {
         id: '5',
         trackingNumber: 'ERK-2024-002001',
         category: 'Environment',
