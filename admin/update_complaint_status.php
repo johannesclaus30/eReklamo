@@ -130,6 +130,18 @@ if (!empty($enumVals)) {
         exit;
     }
     $dbStatus = $map[$uiKey];
+} else {
+    // Fallback: map UI key to common title-cased values
+    $fallbackMap = [
+        'pending' => 'Pending',
+        'in-progress' => 'In Progress',
+        'resolved' => 'Resolved',
+        'rejected' => 'Rejected',
+        'archived' => 'Archived',
+    ];
+    if (isset($fallbackMap[$uiKey])) {
+        $dbStatus = $fallbackMap[$uiKey];
+    }
 }
 
 // --- Optional columns existence check ---

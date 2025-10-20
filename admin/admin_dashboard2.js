@@ -230,7 +230,8 @@ async function handleStatusChange(id, status) {
     showToast('Status saved to database.', 'success');
   } catch (e) {
     console.error(e);
-    showToast('Failed to save status to database.', 'error');
+    const msg = e && e.message ? e.message : 'Unknown error';
+    showToast(`Failed to save status: ${msg}`, 'error');
   }
 }
 
@@ -248,7 +249,7 @@ async function unarchiveComplaint(id) {
 }
 
 async function saveComplaintStatus(id, status) {
-  const res = await fetch('update_complaint_status.php', {
+  const res = await fetch('update_complaint_status', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ id, status })
