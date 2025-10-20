@@ -153,12 +153,12 @@ $types = "s";
 $params = [$dbStatus];
 
 if ($hasProgress) {
-    $sql .= ", `{$colProgress}` = CASE WHEN ? = 'in-progress' THEN CURDATE() ELSE `{$colProgress}` END";
+    $sql .= ", `{$colProgress}` = CASE WHEN ? COLLATE utf8mb4_general_ci = 'in-progress' COLLATE utf8mb4_general_ci THEN CURDATE() ELSE `{$colProgress}` END";
     $types .= "s";
     $params[] = $uiKey;
 }
 if ($hasResolved) {
-    $sql .= ", `{$colResolved}` = CASE WHEN ? = 'resolved' THEN CURDATE() ELSE `{$colResolved}` END";
+    $sql .= ", `{$colResolved}` = CASE WHEN ? COLLATE utf8mb4_general_ci = 'resolved' COLLATE utf8mb4_general_ci THEN CURDATE() ELSE `{$colResolved}` END";
     $types .= "s";
     $params[] = $uiKey;
 }
