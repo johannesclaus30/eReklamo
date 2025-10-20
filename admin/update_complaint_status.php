@@ -8,15 +8,16 @@
 // Avoid emitting notices/warnings into JSON
 @ini_set('display_errors', '0');
 
-// Clean buffer only if it exists to prevent warnings
-if (function_exists('ob_get_level') && ob_get_level() > 0) {
-    @ob_clean();
-}
+// Start buffering so any accidental output from includes can be cleared
+if (!headers_sent()) { @ob_start(); }
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-cache, must-revalidate');
 
 include("../connections.php");
+
+// Clear anything that might have been echoed by includes
+if (function_exists('ob_get_length') && ob_get_length() !== false) { @ob_clean(); }
 
 // Read JSON, fallback to form POST
 $raw = file_get_contents('php://input');
