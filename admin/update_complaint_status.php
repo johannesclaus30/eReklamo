@@ -103,14 +103,13 @@ function getEnumValues($conn, $table, $column) {
     mysqli_stmt_bind_result($stmt, $ctype);
     $got = mysqli_stmt_fetch($stmt) ? $ctype : '';
     mysqli_stmt_close($stmt);
-    // COLUMN_TYPE for ENUM looks like: enum('Pending','In Progress','Resolved',...)
     if (stripos($got, 'enum(') !== 0) return [];
-    $inside = substr($got, 5, -1); // strip enum( ... )
+    $inside = substr($got, 5, -1);
     $parts = preg_split("/,(?=(?:[^']*'[^']*')*[^']*$)/", $inside);
     $vals = [];
     foreach ($parts as $p) {
         $v = trim($p);
-        if ($v[0] === "'" && substr($v, -1) === "'") $v = substr($v, 1, -1);
+        if ($v !== '' && $v[0] === "'" && substr($v, -1) === "'") $v = substr($v, 1, -1);
         $vals[] = $v;
     }
     return $vals;
@@ -120,7 +119,6 @@ function normKey($s) { return strtolower(preg_replace('/[\s_]+/', '-', (string)$
 $enumVals = getEnumValues($connections, $table, $colStatus);
 $dbStatus = $uiKey;
 if (!empty($enumVals)) {
-    // Build mapping based on normalized keys
     $map = [];
     foreach ($enumVals as $ev) { $map[normKey($ev)] = $ev; }
     if (!isset($map[$uiKey])) {
@@ -130,18 +128,6 @@ if (!empty($enumVals)) {
         exit;
     }
     $dbStatus = $map[$uiKey];
-} else {
-    // Fallback: map UI key to common title-cased values
-    $fallbackMap = [
-        'pending' => 'Pending',
-        'in-progress' => 'In Progress',
-        'resolved' => 'Resolved',
-        'rejected' => 'Rejected',
-        'archived' => 'Archived',
-    ];
-    if (isset($fallbackMap[$uiKey])) {
-        $dbStatus = $fallbackMap[$uiKey];
-    }
 }
 
 // --- Optional columns existence check ---
@@ -169,7 +155,7 @@ $params = [$dbStatus];
 if ($hasProgress) {
     $sql .= ", `{$colProgress}` = CASE WHEN ? = 'in-progress' THEN CURDATE() ELSE `{$colProgress}` END";
     $types .= "s";
-    $params[] = $uiKey; // logic based on normalized UI key
+    $params[] = $uiKey;
 }
 if ($hasResolved) {
     $sql .= ", `{$colResolved}` = CASE WHEN ? = 'resolved' THEN CURDATE() ELSE `{$colResolved}` END";
@@ -192,7 +178,6 @@ if (!$stmt) {
     exit;
 }
 
-// Bind with references
 $bindArgs = [$stmt, $types];
 foreach ($params as $k => $v) { $bindArgs[] = &$params[$k]; }
 if (!call_user_func_array('mysqli_stmt_bind_param', $bindArgs)) {
