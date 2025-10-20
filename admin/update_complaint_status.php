@@ -1,12 +1,18 @@
 <?php
 // ======================================================================
 // update_complaint_status.php
-// Updates complaint status; accepts JSON { id, status } where status is
-// one of: pending | in-progress | resolved | rejected | archived
-// Compatible with shared hosting PHP (bind_param with references).
+// Robust status update endpoint that is resilient to Linux case-sensitivity
+// differences and avoids JSON response corruption.
 // ======================================================================
 
-ob_clean();
+// Avoid emitting notices/warnings into JSON
+@ini_set('display_errors', '0');
+
+// Clean buffer only if it exists to prevent warnings
+if (function_exists('ob_get_level') && ob_get_level() > 0) {
+    @ob_clean();
+}
+
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-cache, must-revalidate');
 
@@ -18,7 +24,7 @@ $data = json_decode($raw, true);
 if (!is_array($data)) { $data = $_POST; }
 
 $id = isset($data['id']) ? intval($data['id']) : 0;
-$statusRaw = isset($data['status']) ? strtolower(trim($data['status'])) : '';
+$statusRaw = isset($data['status']) ? trim((string)$data['status']) : '';
 
 if ($id <= 0 || $statusRaw === '') {
     http_response_code(400);
@@ -26,56 +32,97 @@ if ($id <= 0 || $statusRaw === '') {
     exit;
 }
 
-// Normalize to lowercase-hyphen keys
-$statusKey = preg_replace('/[\s_]+/', '-', $statusRaw);
+// Normalize status: accept spaces/underscores/case variants
+$normalized = strtolower(preg_replace('/[\s_]+/', '-', $statusRaw));
+if ($normalized === 'archive') $normalized = 'archived';
 
-// Allowed UI keys (DB column is VARCHAR so these are fine)
 $allowed = ['pending','in-progress','resolved','rejected','archived'];
-if (!in_array($statusKey, $allowed, true)) {
+if (!in_array($normalized, $allowed, true)) {
     http_response_code(400);
     echo json_encode(['success' => false, 'error' => 'Unsupported status value: ' . $statusRaw]);
     exit;
 }
 
-// Helper: check if a column exists (for optional stamping)
-function columnExists($conn, $table, $column) {
-    $tableEsc = mysqli_real_escape_string($conn, $table);
-    $columnEsc = mysqli_real_escape_string($conn, $column);
-    $sql = "
-        SELECT 1
-        FROM INFORMATION_SCHEMA.COLUMNS
-        WHERE TABLE_SCHEMA = DATABASE()
-          AND TABLE_NAME = '$tableEsc'
-          AND COLUMN_NAME = '$columnEsc'
-        LIMIT 1
-    ";
-    $res = mysqli_query($conn, $sql);
-    if (!$res) return false;
-    $exists = mysqli_num_rows($res) > 0;
-    mysqli_free_result($res);
+// Helpers that resolve actual table/column names with case-insensitive lookups
+function resolveTableName($conn, $want) {
+    $sql = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES
+            WHERE TABLE_SCHEMA = DATABASE()
+              AND LOWER(TABLE_NAME) = LOWER(?)
+            LIMIT 1";
+    $stmt = mysqli_prepare($conn, $sql);
+    if (!$stmt) return $want;
+    mysqli_stmt_bind_param($stmt, "s", $want);
+    if (!mysqli_stmt_execute($stmt)) { mysqli_stmt_close($stmt); return $want; }
+    mysqli_stmt_bind_result($stmt, $found);
+    $name = $want;
+    if (mysqli_stmt_fetch($stmt)) $name = $found;
+    mysqli_stmt_close($stmt);
+    return $name ?: $want;
+}
+
+function resolveColumnName($conn, $table, $want) {
+    $sql = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
+            WHERE TABLE_SCHEMA = DATABASE()
+              AND TABLE_NAME = ?
+              AND LOWER(COLUMN_NAME) = LOWER(?)
+            LIMIT 1";
+    $stmt = mysqli_prepare($conn, $sql);
+    if (!$stmt) return $want;
+    mysqli_stmt_bind_param($stmt, "ss", $table, $want);
+    if (!mysqli_stmt_execute($stmt)) { mysqli_stmt_close($stmt); return $want; }
+    mysqli_stmt_bind_result($stmt, $found);
+    $name = $want;
+    if (mysqli_stmt_fetch($stmt)) $name = $found;
+    mysqli_stmt_close($stmt);
+    return $name ?: $want;
+}
+
+$table = resolveTableName($connections, 'complaint');
+
+// Resolve columns (case-insensitive). Falls back to requested names if not found.
+$colStatus   = resolveColumnName($connections, $table, 'Complaint_Status');
+$colId       = resolveColumnName($connections, $table, 'Complaint_ID');
+$colProgress = resolveColumnName($connections, $table, 'Progress_Date');
+$colResolved = resolveColumnName($connections, $table, 'Resolved_Date');
+
+// Check existence of optional stamp columns again, safely
+function columnActuallyExists($conn, $table, $column) {
+    $sql = "SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS
+            WHERE TABLE_SCHEMA = DATABASE()
+              AND TABLE_NAME = ?
+              AND COLUMN_NAME = ?
+            LIMIT 1";
+    $stmt = mysqli_prepare($conn, $sql);
+    if (!$stmt) return false;
+    mysqli_stmt_bind_param($stmt, "ss", $table, $column);
+    if (!mysqli_stmt_execute($stmt)) { mysqli_stmt_close($stmt); return false; }
+    mysqli_stmt_store_result($stmt);
+    $exists = mysqli_stmt_num_rows($stmt) > 0;
+    mysqli_stmt_free_result($stmt);
+    mysqli_stmt_close($stmt);
     return $exists;
 }
 
-$hasProgress = columnExists($connections, 'complaint', 'Progress_Date');
-$hasResolved = columnExists($connections, 'complaint', 'Resolved_Date');
+$hasProgress = columnActuallyExists($connections, $table, $colProgress);
+$hasResolved = columnActuallyExists($connections, $table, $colResolved);
 
-// Build SQL with optional date stamping
-$sql = "UPDATE complaint SET Complaint_Status = ?";
+// Build the UPDATE with optional date stamping, quoting identifiers
+$sql = "UPDATE `{$table}` SET `{$colStatus}` = ?";
 $types = "s";
-$params = [$statusKey];
+$params = [$normalized];
 
 if ($hasProgress) {
-    $sql .= ", Progress_Date = CASE WHEN ? = 'in-progress' THEN CURDATE() ELSE Progress_Date END";
+    $sql .= ", `{$colProgress}` = CASE WHEN ? = 'in-progress' THEN CURDATE() ELSE `{$colProgress}` END";
     $types .= "s";
-    $params[] = $statusKey;
+    $params[] = $normalized;
 }
 if ($hasResolved) {
-    $sql .= ", Resolved_Date = CASE WHEN ? = 'resolved' THEN CURDATE() ELSE Resolved_Date END";
+    $sql .= ", `{$colResolved}` = CASE WHEN ? = 'resolved' THEN CURDATE() ELSE `{$colResolved}` END";
     $types .= "s";
-    $params[] = $statusKey;
+    $params[] = $normalized;
 }
 
-$sql .= " WHERE Complaint_ID = ?";
+$sql .= " WHERE `{$colId}` = ?";
 $types .= "i";
 $params[] = $id;
 
@@ -86,12 +133,12 @@ if (!$stmt) {
     exit;
 }
 
-// Bind with references (shared hosting safe)
+// Bind with references for call_user_func_array
 $bindArgs = [];
 $bindArgs[] = $stmt;
 $bindArgs[] = $types;
 foreach ($params as $k => $v) {
-    $bindArgs[] = &$params[$k]; // pass by reference
+    $bindArgs[] = &$params[$k];
 }
 if (!call_user_func_array('mysqli_stmt_bind_param', $bindArgs)) {
     http_response_code(500);
@@ -110,10 +157,9 @@ if (!mysqli_stmt_execute($stmt)) {
 $affected = mysqli_stmt_affected_rows($stmt);
 mysqli_stmt_close($stmt);
 
-// Return success; 0 rows affected is fine if no change
 echo json_encode([
     'success' => true,
     'id' => $id,
-    'status' => $statusKey,
+    'status' => $normalized,
     'rowsAffected' => $affected
 ], JSON_UNESCAPED_UNICODE);
