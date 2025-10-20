@@ -230,8 +230,7 @@ async function handleStatusChange(id, status) {
     showToast('Status saved to database.', 'success');
   } catch (e) {
     console.error(e);
-    const msg = e && e.message ? e.message : 'Unknown error';
-    showToast(`Failed to save status: ${msg}`, 'error');
+    showToast('Failed to save status to database.', 'error');
   }
 }
 
