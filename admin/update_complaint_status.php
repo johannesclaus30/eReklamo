@@ -29,7 +29,7 @@ if ($id <= 0 || $statusRaw === '') {
 // Normalize to lowercase-hyphen keys
 $statusKey = preg_replace('/[\s_]+/', '-', $statusRaw);
 
-// Allowed UI keys (your DB column is VARCHAR so these are fine)
+// Allowed UI keys (DB column is VARCHAR so these are fine)
 $allowed = ['pending','in-progress','resolved','rejected','archived'];
 if (!in_array($statusKey, $allowed, true)) {
     http_response_code(400);
