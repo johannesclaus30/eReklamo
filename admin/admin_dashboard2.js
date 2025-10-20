@@ -249,7 +249,7 @@ async function unarchiveComplaint(id) {
 }
 
 async function saveComplaintStatus(id, status) {
-  const res = await fetch('update_complaint_status', {
+  const res = await fetch('update_complaint_status.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ id, status })
