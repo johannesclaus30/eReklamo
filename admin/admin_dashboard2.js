@@ -48,7 +48,7 @@ const normStatus = s => {
 
 // ====================== FETCH DATA ======================
 window.addEventListener('DOMContentLoaded', () => {
-  fetch('get_complaints')
+  fetch('get_complaints.php')
     .then(res => res.json())
     .then(data => {
       if (!Array.isArray(data)) throw new Error('Invalid JSON response');
@@ -248,7 +248,7 @@ async function unarchiveComplaint(id) {
 }
 
 async function saveComplaintStatus(id, status) {
-  const res = await fetch('update_complaint_status', {
+  const res = await fetch('update_complaint_status.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ id, status })
@@ -275,7 +275,7 @@ async function loadComplaintMedia(complaintId) {
   if (empty) empty.style.display = 'none';
 
   try {
-    const res = await fetch(`get_complaint_media?complaint_id=${encodeURIComponent(complaintId)}`, { headers: { 'Accept': 'application/json' } });
+    const res = await fetch(`get_complaint_media.php?complaint_id=${encodeURIComponent(complaintId)}`, { headers: { 'Accept': 'application/json' } });
     const data = await res.json().catch(() => null);
     if (!data || !data.success) throw new Error(data?.error || 'Failed to load media');
 
