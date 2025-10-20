@@ -1,9 +1,9 @@
 <?php
 // ======================================================================
 // update_complaint_status.php
-// Updates the complaint status and (optionally) stamps date columns
-// Accepts JSON: { "id": <int>, "status": "pending|in-progress|resolved|rejected|archived" }
-// Resilient to missing columns like Pending_Date (e.g., if you've dropped it).
+// Updates complaint status; accepts JSON { id, status } where status is
+// one of: pending | in-progress | resolved | rejected | archived
+// Compatible with shared hosting PHP (bind_param with references).
 // ======================================================================
 
 ob_clean();
@@ -12,28 +12,35 @@ header('Cache-Control: no-cache, must-revalidate');
 
 include("../connections.php");
 
-// Read JSON or fallback to form-encoded POST
-$input = file_get_contents('php://input');
-$data = json_decode($input, true);
-if (!is_array($data)) {
-    $data = $_POST;
-}
+// Read JSON, fallback to form POST
+$raw = file_get_contents('php://input');
+$data = json_decode($raw, true);
+if (!is_array($data)) { $data = $_POST; }
 
 $id = isset($data['id']) ? intval($data['id']) : 0;
-$status = isset($data['status']) ? strtolower(trim($data['status'])) : '';
+$statusRaw = isset($data['status']) ? strtolower(trim($data['status'])) : '';
 
-$allowed = ['pending','in-progress','resolved','rejected','archived'];
-if ($id <= 0 || !in_array($status, $allowed, true)) {
+if ($id <= 0 || $statusRaw === '') {
     http_response_code(400);
-    echo json_encode(['success' => false, 'error' => 'Invalid id or status.']);
+    echo json_encode(['success' => false, 'error' => 'Invalid id or status']);
     exit;
 }
 
-// Helper: check if a column exists in a table
+// Normalize to lowercase-hyphen keys
+$statusKey = preg_replace('/[\s_]+/', '-', $statusRaw);
+
+// Allowed UI keys (your DB column is VARCHAR so these are fine)
+$allowed = ['pending','in-progress','resolved','rejected','archived'];
+if (!in_array($statusKey, $allowed, true)) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'error' => 'Unsupported status value: ' . $statusRaw]);
+    exit;
+}
+
+// Helper: check if a column exists (for optional stamping)
 function columnExists($conn, $table, $column) {
     $tableEsc = mysqli_real_escape_string($conn, $table);
     $columnEsc = mysqli_real_escape_string($conn, $column);
-    // INFORMATION_SCHEMA is portable across MySQL/MariaDB
     $sql = "
         SELECT 1
         FROM INFORMATION_SCHEMA.COLUMNS
@@ -52,20 +59,20 @@ function columnExists($conn, $table, $column) {
 $hasProgress = columnExists($connections, 'complaint', 'Progress_Date');
 $hasResolved = columnExists($connections, 'complaint', 'Resolved_Date');
 
-// Build SQL dynamically based on which columns exist
+// Build SQL with optional date stamping
 $sql = "UPDATE complaint SET Complaint_Status = ?";
 $types = "s";
-$params = [$status];
+$params = [$statusKey];
 
 if ($hasProgress) {
     $sql .= ", Progress_Date = CASE WHEN ? = 'in-progress' THEN CURDATE() ELSE Progress_Date END";
     $types .= "s";
-    $params[] = $status;
+    $params[] = $statusKey;
 }
 if ($hasResolved) {
     $sql .= ", Resolved_Date = CASE WHEN ? = 'resolved' THEN CURDATE() ELSE Resolved_Date END";
     $types .= "s";
-    $params[] = $status;
+    $params[] = $statusKey;
 }
 
 $sql .= " WHERE Complaint_ID = ?";
@@ -79,21 +86,34 @@ if (!$stmt) {
     exit;
 }
 
-// Use PHP 8+ spread to bind dynamic params
-if (!mysqli_stmt_bind_param($stmt, $types, ...$params)) {
+// Bind with references (shared hosting safe)
+$bindArgs = [];
+$bindArgs[] = $stmt;
+$bindArgs[] = $types;
+foreach ($params as $k => $v) {
+    $bindArgs[] = &$params[$k]; // pass by reference
+}
+if (!call_user_func_array('mysqli_stmt_bind_param', $bindArgs)) {
     http_response_code(500);
     echo json_encode(['success' => false, 'error' => 'bind_param failed: ' . mysqli_error($connections)]);
     mysqli_stmt_close($stmt);
     exit;
 }
 
-$ok = mysqli_stmt_execute($stmt);
-if (!$ok) {
+if (!mysqli_stmt_execute($stmt)) {
     http_response_code(500);
     echo json_encode(['success' => false, 'error' => 'Execute failed: ' . mysqli_stmt_error($stmt)]);
     mysqli_stmt_close($stmt);
     exit;
 }
 
+$affected = mysqli_stmt_affected_rows($stmt);
 mysqli_stmt_close($stmt);
-echo json_encode(['success' => true]);
+
+// Return success; 0 rows affected is fine if no change
+echo json_encode([
+    'success' => true,
+    'id' => $id,
+    'status' => $statusKey,
+    'rowsAffected' => $affected
+], JSON_UNESCAPED_UNICODE);

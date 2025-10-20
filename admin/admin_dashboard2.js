@@ -40,9 +40,9 @@ const statusColors = {
   'rejected': 'status-rejected',
   'archived': 'status-rejected'
 };
-
+// Replace the current normStatus with this:
 const normStatus = s => {
-  const v = String(s || '').toLowerCase();
+  const v = String(s || '').toLowerCase().replace(/[_\s]+/g, '-');
   return v === 'archive' ? 'archived' : v;
 };
 
