@@ -273,7 +273,7 @@ if (isset($_FILES['photoInput'])) {
                             <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                 <path d="M4 6h16M4 12h16M4 18h16"></path>
                             </svg>
-                            Category Information
+                            Complaint Category Information
                         </h3>
 
                         <!-- Hidden input fields for text values -->
@@ -282,7 +282,7 @@ if (isset($_FILES['photoInput'])) {
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="category">Category *</label>
+                                <label for="category">Complaint Category *</label>
                                 <select id="category" name="Complaint_Category" value="<?php echo $Complaint_Category; ?>" required>
                                     <option value="">Select a category</option>
                                     <option value="infrastructure">Infrastructure</option>
@@ -296,7 +296,7 @@ if (isset($_FILES['photoInput'])) {
                             </div>
 
                             <div class="form-group">
-                                <label for="subcategory">Subcategory *</label>
+                                <label for="subcategory">Complaint Subcategory *</label>
                                 <select id="subcategory" name="Complaint_SubCategory" value="<?php echo $Complaint_SubCategory; ?>" required disabled>
                                     <option value="">Select a subcategory</option>
                                 </select>
